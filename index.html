@@ -1,1065 +1,1501 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ABSA Intelligence Cockpit — Hseniva Media</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Absa · Mauritius Intelligence Cockpit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  :root {
+    --absa: #CC0000;
+    --absa-light: #FF3333;
+    --bg: #0A0606;
+    --card: #140A0A;
+    --card-2: #1C0D0D;
+    --border: #2E1515;
+    --text: #F0EBEB;
+    --muted: #8A7A7A;
+    --ok: #00C853;
+    --warn: #FFB300;
+  }
 
-    :root {
-      --bg:       #0F0808;
-      --card:     #1A0F0F;
-      --red:      #CC0000;
-      --accent:   #FF3333;
-      --text:     #F5F0F0;
-      --muted:    #9A8A8A;
-      --border:   #3A2020;
-      --green:    #00C853;
-      --amber:    #FFB300;
-      --card2:    #221414;
-    }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      line-height: 1.6;
-    }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
 
-    /* ═══════════════════════════════════════════════
-       LOGIN SCREEN
-    ═══════════════════════════════════════════════ */
-    #login-screen {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    #login-screen.hidden { display: none; }
+  /* ─── LOGIN OVERLAY ─── */
+  #login-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: radial-gradient(ellipse at 60% 40%, rgba(120,0,0,0.35) 0%, #0A0606 65%);
+    display: flex; align-items: center; justify-content: center;
+  }
 
-    .login-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 48px 44px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 24px 80px rgba(204,0,0,0.18);
-    }
-    .login-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 32px;
-    }
-    .login-logo-mark {
-      width: 44px;
-      height: 44px;
-      background: var(--red);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 18px;
-      letter-spacing: -1px;
-      color: #fff;
-    }
-    .login-logo-text { font-size: 20px; font-weight: 700; color: var(--text); }
-    .login-logo-sub  { font-size: 11px; color: var(--muted); font-weight: 400; }
-    .login-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-    .login-sub   { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+  .login-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 56px 48px;
+    width: 420px;
+    max-width: 95vw;
+    text-align: center;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(204,0,0,0.08);
+  }
 
-    .login-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; display: block; }
-    .login-input {
-      width: 100%;
-      background: #110A0A;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 12px 14px;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      margin-bottom: 18px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .login-input:focus { border-color: var(--red); }
-    .login-input::placeholder { color: #5A4040; }
+  .login-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
 
-    .login-btn {
-      width: 100%;
-      background: var(--red);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 13px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      margin-top: 4px;
-    }
-    .login-btn:hover  { background: var(--accent); }
-    .login-btn:active { transform: scale(0.99); }
+  .login-subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
 
-    .login-error {
-      color: var(--accent);
-      font-size: 13px;
-      margin-top: 12px;
-      text-align: center;
-      height: 18px;
-    }
-    .login-footer-note {
-      margin-top: 28px;
-      text-align: center;
-      font-size: 11px;
-      color: #5A4040;
-    }
+  .login-badge {
+    display: inline-block;
+    background: rgba(204,0,0,0.2);
+    border: 1px solid rgba(204,0,0,0.4);
+    color: #FF6666;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 4px 12px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+  }
 
-    /* ═══════════════════════════════════════════════
-       DASHBOARD SHELL
-    ═══════════════════════════════════════════════ */
-    #dashboard {
-      display: none;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    #dashboard.visible { display: flex; }
+  .login-field {
+    position: relative;
+    margin-bottom: 16px;
+    text-align: left;
+  }
 
-    /* TOP NAV */
-    .topnav {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
-      height: 60px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .topnav-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .brand-mark {
-      width: 34px; height: 34px;
-      background: var(--red);
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 14px; color: #fff; letter-spacing: -0.5px;
-    }
-    .brand-name  { font-size: 16px; font-weight: 700; color: var(--text); }
-    .brand-badge { font-size: 10px; background: #2A1515; border: 1px solid var(--border); color: var(--muted); padding: 2px 8px; border-radius: 20px; margin-left: 4px; }
-    .topnav-right { display: flex; align-items: center; gap: 16px; }
-    .nav-timestamp { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
-    .nav-user { font-size: 13px; color: var(--muted); }
-    .nav-user span { color: var(--text); font-weight: 600; }
-    .nav-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); }
+  .login-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
 
-    /* TABS */
-    .tabs-bar {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      padding: 0 28px;
-    }
-    .tab-btn {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 500;
-      font-family: 'Inter', sans-serif;
-      padding: 14px 18px;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: color 0.2s, border-color 0.2s;
-      white-space: nowrap;
-    }
-    .tab-btn:hover  { color: var(--text); }
-    .tab-btn.active { color: var(--text); border-bottom-color: var(--red); font-weight: 600; }
+  .login-field input {
+    width: 100%;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
 
-    /* MAIN CONTENT */
-    .main {
-      flex: 1;
-      padding: 32px 28px 48px;
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto;
-    }
+  .login-field input:focus {
+    border-color: var(--absa);
+  }
 
-    /* TAB PANELS */
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+  .login-btn {
+    width: 100%;
+    background: var(--absa);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+    letter-spacing: 0.03em;
+    transition: background 0.2s, transform 0.1s;
+  }
 
-    /* ═══════════════════════════════════════════════
-       SHARED COMPONENTS
-    ═══════════════════════════════════════════════ */
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
+  .login-btn:hover { background: var(--absa-light); }
+  .login-btn:active { transform: scale(0.98); }
 
-    .panel-heading {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-    .panel-sub {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 28px;
-    }
+  .login-error {
+    color: #FF6666;
+    font-size: 12px;
+    margin-top: 10px;
+    min-height: 18px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
 
-    /* STAT CARDS */
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-    @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+  .login-error.show { opacity: 1; }
 
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 22px 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: var(--red);
-    }
-    .stat-value {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 28px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.1;
-      margin-bottom: 6px;
-    }
-    .stat-label {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 500;
-    }
-    .stat-icon {
-      position: absolute;
-      top: 18px; right: 18px;
-      font-size: 20px;
-      opacity: 0.35;
-    }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-8px); }
+    80% { transform: translateX(8px); }
+  }
 
-    /* EXEC CARD */
-    .exec-card {
-      background: #110A0A;
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--red);
-      border-radius: 10px;
-      padding: 24px 26px;
-      margin-bottom: 28px;
-    }
-    .exec-card-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--red);
-      margin-bottom: 10px;
-    }
-    .exec-card p {
-      font-size: 14px;
-      line-height: 1.75;
-      color: #D0C8C8;
-    }
+  .shake { animation: shake 0.4s ease; }
 
-    /* SIGNAL BARS */
-    .signals-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    @media (max-width: 700px) { .signals-grid { grid-template-columns: 1fr; } }
+  /* ─── MAIN APP ─── */
+  #app { display: none; flex-direction: column; min-height: 100vh; }
 
-    .signal-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px 18px;
-    }
-    .signal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .signal-name { font-size: 13px; font-weight: 600; color: var(--text); }
-    .signal-pct  { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--muted); }
-    .signal-bar-bg {
-      height: 6px;
-      background: #2A1515;
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .signal-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-    }
+  /* ─── HEADER ─── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,6,6,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
 
-    /* GENERIC CARD */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 24px;
-      margin-bottom: 24px;
-    }
-    .card-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .card-title::before {
-      content: '';
-      display: inline-block;
-      width: 3px;
-      height: 16px;
-      background: var(--red);
-      border-radius: 2px;
-    }
+  .header-brand {
+    display: flex; align-items: baseline; gap: 8px;
+    flex-shrink: 0;
+  }
 
-    /* DATA TABLE */
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    .data-table th {
-      text-align: left;
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      border-bottom: 1px solid var(--border);
-      padding: 10px 12px;
-    }
-    .data-table td {
-      padding: 12px 12px;
-      border-bottom: 1px solid #221414;
-      color: var(--text);
-    }
-    .data-table tr:last-child td { border-bottom: none; }
-    .data-table tr:hover td { background: rgba(204,0,0,0.04); }
-    .data-table .mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
-    .data-table .highlight-row td { color: var(--accent); font-weight: 600; }
+  .header-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+  }
 
-    .trend-up   { color: var(--green); font-weight: 700; }
-    .trend-flat { color: var(--amber); font-weight: 700; }
-    .trend-down { color: var(--accent); font-weight: 700; }
+  .header-sub {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
 
-    /* PROVINCE GRID */
-    .province-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    .province-cell {
-      border-radius: 8px;
-      padding: 16px 14px;
-      text-align: center;
-    }
-    .province-cell .prov-name  { font-size: 13px; font-weight: 700; color: #fff; }
-    .province-cell .prov-level { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; opacity: 0.8; }
+  .header-tabs {
+    display: flex; gap: 4px;
+    flex: 1; justify-content: center;
+    flex-wrap: nowrap;
+  }
 
-    /* COMPETITOR CARDS */
-    .comp-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      margin-bottom: 24px;
-    }
-    @media (max-width: 700px) { .comp-cards-grid { grid-template-columns: 1fr; } }
+  .tab-pill {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
 
-    .comp-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px 20px;
-    }
-    .comp-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .comp-card-name   { font-size: 15px; font-weight: 700; color: var(--text); }
-    .comp-card-tag    { font-size: 10px; background: #2A1515; border: 1px solid var(--border); color: var(--red); padding: 3px 8px; border-radius: 20px; font-weight: 600; }
-    .comp-card-tagline { font-size: 13px; font-weight: 600; color: var(--amber); margin-bottom: 6px; }
-    .comp-card-desc { font-size: 12px; color: var(--muted); }
+  .tab-pill:hover { color: var(--text); border-color: var(--border); }
 
-    /* GAP OPPORTUNITY CARDS */
-    .gap-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-    @media (max-width: 800px) { .gap-cards-grid { grid-template-columns: 1fr; } }
+  .tab-pill.active {
+    background: rgba(204,0,0,0.15);
+    border-color: rgba(204,0,0,0.4);
+    color: var(--absa-light);
+  }
 
-    .gap-card {
-      background: #071A0F;
-      border: 1px solid #1A4030;
-      border-left: 4px solid var(--green);
-      border-radius: 10px;
-      padding: 18px 20px;
-    }
-    .gap-card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--green); margin-bottom: 8px; }
-    .gap-card-text  { font-size: 13px; color: #C8E8D8; line-height: 1.6; }
+  .header-right {
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
 
-    /* AUDIENCE CARDS */
-    .audience-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    @media (max-width: 800px) { .audience-grid { grid-template-columns: 1fr; } }
+  #live-clock {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
 
-    .audience-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 22px 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .audience-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--red), var(--accent));
-    }
-    .audience-name  { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-    .audience-demo  { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
-    .audience-metric { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .audience-metric-label { font-size: 11px; color: var(--muted); }
-    .audience-metric-val   { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--text); }
+  .conf-badge {
+    background: rgba(204,0,0,0.15);
+    border: 1px solid rgba(204,0,0,0.3);
+    color: #FF6666;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
 
-    /* PHASE TIMELINE */
-    .phase-timeline {
-      display: flex;
-      gap: 0;
-      margin-bottom: 28px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-    }
-    .phase-step {
-      flex: 1;
-      min-width: 140px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-right: none;
-      padding: 18px 16px;
-      position: relative;
-    }
-    .phase-step:first-child { border-radius: 10px 0 0 10px; }
-    .phase-step:last-child  { border-right: 1px solid var(--border); border-radius: 0 10px 10px 0; }
-    .phase-step.active-phase { background: #200F0F; border-color: var(--red); }
-    .phase-num   { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 6px; }
-    .phase-name  { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-    .phase-weeks { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-    .phase-budget { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600; color: var(--red); margin-bottom: 4px; }
-    .phase-channel { font-size: 11px; color: var(--muted); font-weight: 500; }
-    .phase-connector {
-      position: absolute;
-      right: -10px; top: 50%;
-      transform: translateY(-50%);
-      width: 0; height: 0;
-      border-top: 8px solid transparent;
-      border-bottom: 8px solid transparent;
-      border-left: 10px solid var(--border);
-      z-index: 1;
-    }
-    .phase-step.active-phase .phase-connector { border-left-color: var(--red); }
-    .phase-step:last-child .phase-connector { display: none; }
+  /* ─── CONTENT ─── */
+  main { flex: 1; padding: 32px 24px; max-width: 1280px; margin: 0 auto; width: 100%; }
 
-    /* CHART CONTAINERS */
-    .chart-wrap {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 24px;
-      overflow: hidden;
-    }
-    .chart-wrap svg { display: block; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 
-    /* D3 tooltips */
-    .d3-tooltip {
-      position: fixed;
-      background: #1A0F0F;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: var(--text);
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.15s;
-      z-index: 1000;
-      max-width: 200px;
-    }
-    .d3-tooltip.visible { opacity: 1; }
-    .d3-tooltip strong { color: var(--accent); display: block; margin-bottom: 4px; }
+  /* ─── SECTION HEADERS ─── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--absa);
+    margin-bottom: 6px;
+  }
 
-    /* FOOTER */
-    .footer {
-      text-align: center;
-      padding: 20px 28px;
-      border-top: 1px solid var(--border);
-      font-size: 11px;
-      color: #5A4040;
-      font-family: 'IBM Plex Mono', monospace;
-    }
-    .footer a { color: var(--muted); text-decoration: none; }
-    .footer a:hover { color: var(--red); }
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
 
-    /* PILL BADGE */
-    .badge {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-    }
-    .badge-red   { background: rgba(204,0,0,0.18); color: var(--accent); border: 1px solid rgba(204,0,0,0.3); }
-    .badge-green { background: rgba(0,200,83,0.12); color: var(--green); border: 1px solid rgba(0,200,83,0.25); }
-    .badge-amber { background: rgba(255,179,0,0.12); color: var(--amber); border: 1px solid rgba(255,179,0,0.25); }
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
 
-    /* CPA HIGHLIGHT */
-    .cpa-low  { color: var(--green); font-weight: 700; }
-    .cpa-high { color: var(--accent); font-weight: 700; }
+  .card-2 {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
 
-    /* scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: #3A2020; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #5A3030; }
+  /* ─── GRID HELPERS ─── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; }
 
-    /* Grid 2-col layout */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
-  </style>
+  /* ─── STAT CARDS ─── */
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--absa-light);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ─── EXECUTIVE BRIEF ─── */
+  .exec-brief {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--absa);
+    border-radius: 0 12px 12px 0;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+  }
+
+  .exec-brief-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--absa);
+    margin-bottom: 10px;
+  }
+
+  .exec-brief p {
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  /* ─── SIGNAL BARS ─── */
+  .signal-row {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .signal-label {
+    font-size: 12px;
+    color: var(--text);
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .signal-track {
+    flex: 1;
+    height: 8px;
+    background: var(--card-2);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .signal-fill {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .signal-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ─── PRODUCT TIMELINE ─── */
+  .timeline-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-top: 24px;
+    overflow-x: auto;
+  }
+
+  .timeline-track {
+    display: flex; align-items: stretch;
+    gap: 0;
+    min-width: 700px;
+  }
+
+  .tl-item {
+    flex: 1;
+    position: relative;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-right: none;
+    padding: 16px 14px 14px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+
+  .tl-item:first-child { border-radius: 8px 0 0 8px; }
+
+  .tl-item:last-child {
+    border-right: 1px solid var(--border);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .tl-item::after {
+    content: '';
+    position: absolute;
+    right: -12px; top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-top: 22px solid transparent;
+    border-bottom: 22px solid transparent;
+    border-left: 12px solid var(--card-2);
+    z-index: 2;
+  }
+
+  .tl-item:last-child::after { display: none; }
+
+  .tl-year {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--absa);
+    letter-spacing: 0.05em;
+  }
+
+  .tl-event {
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  /* ─── CHART CONTAINERS ─── */
+  .chart-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .chart-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .chart-title span {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+
+  /* ─── D3 TOOLTIP ─── */
+  .d3-tooltip {
+    position: fixed;
+    background: rgba(20,10,10,0.95);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    pointer-events: none;
+    font-size: 12px;
+    color: var(--text);
+    z-index: 9000;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    display: none;
+  }
+
+  .d3-tooltip .tip-name {
+    font-weight: 700;
+    color: var(--absa-light);
+    margin-bottom: 4px;
+  }
+
+  /* ─── MARKET TABLE ─── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table th {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .data-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid rgba(46,21,21,0.5);
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+
+  .data-table tr.highlight td {
+    background: rgba(204,0,0,0.07);
+    color: #fff;
+  }
+
+  .data-table tr.highlight td:first-child {
+    border-left: 2px solid var(--absa);
+    padding-left: 14px;
+  }
+
+  .table-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 12px;
+    padding: 10px 16px;
+    background: rgba(204,0,0,0.05);
+    border: 1px solid rgba(204,0,0,0.15);
+    border-radius: 6px;
+  }
+
+  /* ─── COMPETITOR INTEL TABLE ─── */
+  .intel-header {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--ok);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding: 10px 16px;
+    background: rgba(0,200,83,0.05);
+    border: 1px solid rgba(0,200,83,0.15);
+    border-radius: 6px;
+  }
+
+  .intel-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+
+  .intel-table th {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+
+  .intel-table td {
+    padding: 11px 12px;
+    border-bottom: 1px solid rgba(46,21,21,0.4);
+    color: var(--text);
+    font-size: 11px;
+  }
+
+  .intel-table tr:last-child td { border-bottom: none; }
+
+  .intel-table tr.underperform td { color: var(--warn); }
+
+  .trend-up { color: var(--ok); }
+  .trend-flat { color: var(--muted); }
+
+  .status-active {
+    display: inline-flex; align-items: center; gap: 5px;
+    color: #FF5555;
+    font-size: 11px;
+  }
+
+  .status-steady {
+    display: inline-flex; align-items: center; gap: 5px;
+    color: var(--warn);
+    font-size: 11px;
+  }
+
+  /* ─── ALERT CARD ─── */
+  .alert-card {
+    background: rgba(255,179,0,0.07);
+    border: 1px solid rgba(255,179,0,0.25);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--warn);
+    margin: 20px 0;
+    line-height: 1.6;
+  }
+
+  /* ─── POSITIONING CARDS ─── */
+  .pos-card {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .pos-card-bank {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .pos-card-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--absa);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .pos-card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ─── GAP CARDS ─── */
+  .gap-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--ok);
+    border-radius: 0 10px 10px 0;
+    padding: 18px 20px;
+  }
+
+  .gap-card-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ok);
+    margin-bottom: 6px;
+  }
+
+  .gap-card p {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ─── AUDIENCE CARDS ─── */
+  .audience-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+
+  .audience-segment {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .audience-range {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .audience-meta {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  .audience-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(46,21,21,0.5);
+    padding-bottom: 8px;
+  }
+
+  .audience-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .aud-key { color: var(--muted); }
+
+  .aud-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    color: var(--absa-light);
+  }
+
+  .aud-edge {
+    font-size: 11px;
+    color: var(--ok);
+    font-style: italic;
+  }
+
+  /* ─── HEATMAP ─── */
+  .heatmap-wrap { overflow-x: auto; }
+
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: 140px repeat(5, 1fr);
+    gap: 3px;
+    min-width: 600px;
+  }
+
+  .hm-header {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 8px 10px;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  .hm-row-label {
+    font-size: 11px;
+    color: var(--text);
+    padding: 10px 10px;
+    display: flex; align-items: center;
+    background: var(--card-2);
+    border-radius: 4px;
+  }
+
+  .hm-cell {
+    height: 44px;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    cursor: default;
+    transition: transform 0.15s;
+  }
+
+  .hm-cell:hover { transform: scale(1.05); z-index: 2; }
+
+  /* ─── BLUEPRINT PHASES ─── */
+  .phases-wrap {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    margin-bottom: 28px;
+  }
+
+  .phase-item {
+    flex: 1;
+    min-width: 160px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-right: none;
+    padding: 18px 16px;
+    position: relative;
+  }
+
+  .phase-item:first-child { border-radius: 10px 0 0 10px; }
+
+  .phase-item:last-child {
+    border-right: 1px solid var(--border);
+    border-radius: 0 10px 10px 0;
+  }
+
+  .phase-item::after {
+    content: '';
+    position: absolute;
+    right: -14px; top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-top: 28px solid transparent;
+    border-bottom: 28px solid transparent;
+    border-left: 14px solid var(--card-2);
+    z-index: 2;
+  }
+
+  .phase-item:last-child::after { display: none; }
+
+  .phase-num {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--absa);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .phase-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .phase-period {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .phase-budget {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--warn);
+    margin-bottom: 10px;
+  }
+
+  .phase-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .phase-kpi {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ok);
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+  }
+
+  /* ─── INVESTMENT TABLE ─── */
+  .inv-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .inv-table th {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+
+  .inv-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid rgba(46,21,21,0.5);
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .inv-table tr:last-child td {
+    border-bottom: none;
+    background: rgba(204,0,0,0.07);
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .inv-table tr:last-child td:first-child {
+    border-radius: 0 0 0 8px;
+  }
+
+  .inv-table tr:last-child td:last-child {
+    border-radius: 0 0 8px 0;
+    color: var(--ok);
+  }
+
+  /* ─── WHY HSENIVA CAPS ─── */
+  .cap-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .cap-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--absa);
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
+  }
+
+  .cap-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: 0.03em;
+  }
+
+  .cap-tags {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .cap-quote {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--text);
+    border-left: 2px solid var(--absa);
+    padding-left: 14px;
+  }
+
+  /* ─── CASE STUDY ─── */
+  .case-card {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--absa);
+    border-radius: 0 12px 12px 0;
+    padding: 26px 28px;
+    margin-bottom: 36px;
+  }
+
+  .case-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--absa);
+    margin-bottom: 14px;
+  }
+
+  .case-row {
+    display: flex; gap: 12px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+
+  .case-key {
+    font-weight: 600;
+    color: var(--muted);
+    width: 90px;
+    flex-shrink: 0;
+  }
+
+  .case-val { color: var(--text); }
+
+  /* ─── CTA ─── */
+  .cta-section {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 32px;
+  }
+
+  .cta-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--absa);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 16px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    transition: background 0.2s, transform 0.1s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .cta-btn:hover { background: var(--absa-light); transform: translateY(-1px); }
+  .cta-btn:active { transform: translateY(0); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── MISC UTILS ─── */
+  .mb-8 { margin-bottom: 8px; }
+  .mb-16 { margin-bottom: 16px; }
+  .mb-24 { margin-bottom: 24px; }
+  .mb-32 { margin-bottom: 32px; }
+  .mt-24 { margin-top: 24px; }
+
+  .flex { display: flex; }
+  .flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+  /* D3 axis styling */
+  .tick text {
+    fill: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+  }
+
+  .tick line, .domain {
+    stroke: var(--border);
+  }
+
+  .grid line {
+    stroke: rgba(46,21,21,0.6);
+    stroke-dasharray: 3,3;
+  }
+
+  .grid path { stroke-width: 0; }
+
+  /* Map tooltip */
+  #map-tooltip {
+    position: fixed;
+    background: rgba(20,10,10,0.95);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    pointer-events: none;
+    font-size: 12px;
+    color: var(--text);
+    z-index: 9000;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    display: none;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--absa); }
+</style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════
-     LOGIN SCREEN
-══════════════════════════════════ -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="login-logo-mark">AB</div>
-      <div>
-        <div class="login-logo-text">ABSA Bank</div>
-        <div class="login-logo-sub">Intelligence Cockpit · Hseniva Media</div>
-      </div>
+<!-- ─── LOGIN OVERLAY ─── -->
+<div id="login-overlay">
+  <div class="login-box" id="login-box">
+    <div class="login-logo">Absa.</div>
+    <div class="login-subtitle">Mauritius Intelligence Cockpit</div>
+    <div class="login-badge">CONFIDENTIAL — Hseniva Media</div>
+    <div class="login-field">
+      <label for="login-user">Username</label>
+      <input type="text" id="login-user" placeholder="Enter username" autocomplete="off" />
     </div>
-    <div class="login-title">Secure Access</div>
-    <div class="login-sub">Enter your credentials to access the intelligence dashboard.</div>
-    <label class="login-label" for="l-user">Username</label>
-    <input class="login-input" id="l-user" type="text" placeholder="Enter username" autocomplete="username" />
-    <label class="login-label" for="l-pass">Password</label>
-    <input class="login-input" id="l-pass" type="password" placeholder="Enter password" autocomplete="current-password" />
+    <div class="login-field">
+      <label for="login-pass">Password</label>
+      <input type="password" id="login-pass" placeholder="Enter password" />
+    </div>
     <button class="login-btn" id="login-btn">Access Dashboard</button>
-    <div class="login-error" id="login-error"></div>
-    <div class="login-footer-note">Confidential · For authorised use only</div>
+    <div class="login-error" id="login-error">Invalid credentials. Please try again.</div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════
-     DASHBOARD
-══════════════════════════════════ -->
-<div id="dashboard">
-  <!-- Top Nav -->
-  <nav class="topnav">
-    <div class="topnav-brand">
-      <div class="brand-mark">AB</div>
-      <div>
-        <span class="brand-name">ABSA Intelligence Cockpit</span>
-        <span class="brand-badge">CONFIDENTIAL</span>
-      </div>
+<!-- ─── MAIN APP ─── -->
+<div id="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-brand">
+      <span class="header-logo">Absa.</span>
+      <span class="header-sub">· Mauritius Intelligence</span>
     </div>
-    <div class="topnav-right">
-      <div class="nav-dot"></div>
-      <div class="nav-user">Signed in as <span id="nav-username">Avinesh</span></div>
-      <div class="nav-timestamp" id="nav-time">--:-- --</div>
+    <nav class="header-tabs">
+      <button class="tab-pill active" data-tab="overview">Overview</button>
+      <button class="tab-pill" data-tab="market">Market</button>
+      <button class="tab-pill" data-tab="competitors">Competitors</button>
+      <button class="tab-pill" data-tab="opportunities">Opportunities</button>
+      <button class="tab-pill" data-tab="blueprint">Blueprint</button>
+      <button class="tab-pill" data-tab="why-hseniva">Why Hseniva</button>
+    </nav>
+    <div class="header-right">
+      <span id="live-clock"></span>
+      <span class="conf-badge">Confidential</span>
     </div>
-  </nav>
+  </header>
 
-  <!-- Tabs Bar -->
-  <div class="tabs-bar">
-    <button class="tab-btn active" data-tab="overview">Overview</button>
-    <button class="tab-btn" data-tab="market">Market</button>
-    <button class="tab-btn" data-tab="competitors">Competitors</button>
-    <button class="tab-btn" data-tab="opportunities">Opportunities</button>
-    <button class="tab-btn" data-tab="blueprint">Blueprint</button>
-  </div>
+  <!-- MAIN CONTENT -->
+  <main>
 
-  <!-- Main -->
-  <div class="main">
+    <!-- ═══════════════════════════════════════════════ TAB 1: OVERVIEW -->
+    <div class="tab-content active" id="tab-overview">
+      <div class="section-label">Intelligence Cockpit</div>
+      <div class="section-title">Absa Bank Mauritius — Market Position 2026</div>
 
-    <!-- ════════════════════════════
-         TAB 1: OVERVIEW
-    ════════════════════════════ -->
-    <div class="tab-panel active" id="tab-overview">
-      <div class="panel-heading">Market Overview</div>
-      <div class="panel-sub">South Africa banking digital landscape · Updated 2026</div>
-
-      <div class="stat-grid">
+      <!-- Stat Cards -->
+      <div class="grid-4 mb-32">
         <div class="stat-card">
-          <div class="stat-icon">💰</div>
-          <div class="stat-value">R2.4B+</div>
-          <div class="stat-label">Estimated SA bank digital ad spend</div>
+          <div class="stat-number">MUR 293M</div>
+          <div class="stat-label">Digital Investment 2025</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">📱</div>
-          <div class="stat-value">65%</div>
-          <div class="stat-label">ABSA new product sales via digital</div>
+          <div class="stat-number">77%</div>
+          <div class="stat-label">Customers Banking Digitally</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">⚠️</div>
-          <div class="stat-value">25.2M</div>
-          <div class="stat-label">Capitec active clients (biggest threat)</div>
+          <div class="stat-number">19</div>
+          <div class="stat-label">Licensed Banks in Mauritius</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">👥</div>
-          <div class="stat-value">28M</div>
-          <div class="stat-label">Meta users in South Africa</div>
+          <div class="stat-number">90%+</div>
+          <div class="stat-label">Adult Financial Inclusion</div>
         </div>
       </div>
 
-      <div class="exec-card">
-        <div class="exec-card-label">🔺 Executive Intelligence Read</div>
-        <p>ABSA runs one of SA's largest paid media budgets, yet engagement metrics trail Capitec and FNB on key social surfaces. The opportunity: precision audience targeting, smarter creative sequencing, and a performance marketing infrastructure that converts ABSA's brand trust into measurable acquisition at lower CPA.</p>
+      <!-- Executive Brief -->
+      <div class="exec-brief mb-32">
+        <div class="exec-brief-label">Executive Brief</div>
+        <p>Absa Bank Mauritius, formerly Barclays Bank, completed its transformation in 2020. With Rs 293 million invested in technology and 77% of customers now banking digitally, ABSA Mauritius has built the island's most advanced digital banking suite — yet brand awareness and digital acquisition efficiency lag behind MCB's scale. The opportunity: precision performance marketing and a measurement infrastructure that converts superior products into measurable market share.</p>
       </div>
 
-      <div class="section-title">Signal Strength Indicators</div>
-      <div class="signals-grid">
-        <div class="signal-item">
-          <div class="signal-header">
-            <span class="signal-name">Digital Brand Trust</span>
-            <span class="signal-pct">78%</span>
+      <!-- Signal Bars -->
+      <div class="card mb-32">
+        <div class="chart-title">Digital Signal Intelligence <span>Current performance vs market</span></div>
+        <div id="signal-bars">
+          <div class="signal-row">
+            <div class="signal-label">Digital Product Quality</div>
+            <div class="signal-track"><div class="signal-fill" data-pct="84" style="background: linear-gradient(90deg, #CC0000, #FF3333);"></div></div>
+            <div class="signal-value">84%</div>
           </div>
-          <div class="signal-bar-bg">
-            <div class="signal-bar-fill" data-width="78" style="width:0;background:var(--green);"></div>
+          <div class="signal-row">
+            <div class="signal-label">Brand Awareness vs MCB</div>
+            <div class="signal-track"><div class="signal-fill" data-pct="48" style="background: linear-gradient(90deg, #7A3000, #CC4400);"></div></div>
+            <div class="signal-value">48%</div>
           </div>
-        </div>
-        <div class="signal-item">
-          <div class="signal-header">
-            <span class="signal-name">Meta Platform Presence</span>
-            <span class="signal-pct">45%</span>
+          <div class="signal-row">
+            <div class="signal-label">Meta Ad Presence</div>
+            <div class="signal-track"><div class="signal-fill" data-pct="41" style="background: linear-gradient(90deg, #7A3000, #CC4400);"></div></div>
+            <div class="signal-value">41%</div>
           </div>
-          <div class="signal-bar-bg">
-            <div class="signal-bar-fill" data-width="45" style="width:0;background:var(--amber);"></div>
+          <div class="signal-row">
+            <div class="signal-label">Creative Performance</div>
+            <div class="signal-track"><div class="signal-fill" data-pct="36" style="background: linear-gradient(90deg, #5A2800, #AA3800);"></div></div>
+            <div class="signal-value">36%</div>
           </div>
-        </div>
-        <div class="signal-item">
-          <div class="signal-header">
-            <span class="signal-name">App Adoption</span>
-            <span class="signal-pct">72%</span>
-          </div>
-          <div class="signal-bar-bg">
-            <div class="signal-bar-fill" data-width="72" style="width:0;background:var(--green);"></div>
-          </div>
-        </div>
-        <div class="signal-item">
-          <div class="signal-header">
-            <span class="signal-name">Creative Performance</span>
-            <span class="signal-pct">38%</span>
-          </div>
-          <div class="signal-bar-bg">
-            <div class="signal-bar-fill" data-width="38" style="width:0;background:var(--accent);"></div>
-          </div>
-        </div>
-        <div class="signal-item" style="grid-column: 1 / -1;">
-          <div class="signal-header">
-            <span class="signal-name">Paid Media Efficiency</span>
-            <span class="signal-pct">42%</span>
-          </div>
-          <div class="signal-bar-bg">
-            <div class="signal-bar-fill" data-width="42" style="width:0;background:var(--amber);"></div>
+          <div class="signal-row">
+            <div class="signal-label">Digital Adoption</div>
+            <div class="signal-track"><div class="signal-fill" data-pct="77" style="background: linear-gradient(90deg, #CC0000, #FF3333);"></div></div>
+            <div class="signal-value">77%</div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ════════════════════════════
-         TAB 2: MARKET
-    ════════════════════════════ -->
-    <div class="tab-panel" id="tab-market">
-      <div class="panel-heading">Market Intelligence</div>
-      <div class="panel-sub">Competitive positioning across SA banking sector</div>
-
-      <div class="card-title" style="margin-bottom:14px;">Competitive Positioning — Bubble Chart</div>
-      <div class="chart-wrap" id="bubble-wrap">
-        <svg id="bubble-chart"></svg>
-      </div>
-
-      <div class="card-title" style="margin-bottom:14px;">Market Benchmarks</div>
-      <div class="card" style="padding:0;overflow:hidden;">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Bank</th>
-              <th>Customers</th>
-              <th>Digital Adoption</th>
-              <th>Ad Spend Index</th>
-              <th>CPA Index</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="badge badge-red">THREAT</span> Capitec</td>
-              <td class="mono">25.2M</td>
-              <td><span class="badge badge-green">89%</span></td>
-              <td class="mono">62</td>
-              <td class="mono cpa-low">85</td>
-            </tr>
-            <tr>
-              <td>Standard Bank</td>
-              <td class="mono">14M</td>
-              <td>71%</td>
-              <td class="mono">95</td>
-              <td class="mono">110</td>
-            </tr>
-            <tr>
-              <td>FNB</td>
-              <td class="mono">12M</td>
-              <td>79%</td>
-              <td class="mono">105</td>
-              <td class="mono">108</td>
-            </tr>
-            <tr class="highlight-row">
-              <td><span class="badge badge-amber">YOU</span> ABSA</td>
-              <td class="mono">11M</td>
-              <td>72%</td>
-              <td class="mono">115</td>
-              <td class="mono cpa-high">128</td>
-            </tr>
-            <tr>
-              <td>Nedbank</td>
-              <td class="mono">8M</td>
-              <td>68%</td>
-              <td class="mono">78</td>
-              <td class="mono">118</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="card-title" style="margin-bottom:14px;">Province Opportunity Grid</div>
-      <div class="card">
-        <div class="province-grid">
-          <div class="province-cell" style="background:#CC0000;">
-            <div class="prov-name">Gauteng</div>
-            <div class="prov-level">High Opportunity</div>
+      <!-- Product Timeline -->
+      <div class="timeline-wrap">
+        <div class="chart-title" style="margin-bottom:20px;">Product Evolution Timeline</div>
+        <div class="timeline-track">
+          <div class="tl-item">
+            <div class="tl-year">2020</div>
+            <div class="tl-event">Rebranded from Barclays</div>
           </div>
-          <div class="province-cell" style="background:#CC0000;">
-            <div class="prov-name">Western Cape</div>
-            <div class="prov-level">High Opportunity</div>
+          <div class="tl-item">
+            <div class="tl-year">2021</div>
+            <div class="tl-event">Absa Mobile App launched</div>
           </div>
-          <div class="province-cell" style="background:#E87070;">
-            <div class="prov-name">KwaZulu-Natal</div>
-            <div class="prov-level">Medium Opportunity</div>
+          <div class="tl-item">
+            <div class="tl-year">2023</div>
+            <div class="tl-event">Spark by Absa — entrepreneur banking</div>
           </div>
-          <div class="province-cell" style="background:#E87070;">
-            <div class="prov-name">Eastern Cape</div>
-            <div class="prov-level">Medium Opportunity</div>
+          <div class="tl-item">
+            <div class="tl-year">2025</div>
+            <div class="tl-event">Best Investment Bank MU award</div>
           </div>
-          <div class="province-cell" style="background:#7A3333;">
-            <div class="prov-name">Limpopo</div>
-            <div class="prov-level">Lower Opportunity</div>
+          <div class="tl-item">
+            <div class="tl-year">2026 Mar</div>
+            <div class="tl-event">First multi-currency virtual card in Mauritius</div>
           </div>
-          <div class="province-cell" style="background:#7A3333;">
-            <div class="prov-name">Mpumalanga</div>
-            <div class="prov-level">Lower Opportunity</div>
+          <div class="tl-item">
+            <div class="tl-year">2026</div>
+            <div class="tl-event">Absa Pay launched</div>
           </div>
-          <div class="province-cell" style="background:#7A3333;">
-            <div class="prov-name">North West</div>
-            <div class="prov-level">Lower Opportunity</div>
-          </div>
-          <div class="province-cell" style="background:#7A3333;">
-            <div class="prov-name">Free State</div>
-            <div class="prov-level">Lower Opportunity</div>
-          </div>
-          <div class="province-cell" style="background:#7A3333;">
-            <div class="prov-name">Northern Cape</div>
-            <div class="prov-level">Lower Opportunity</div>
-          </div>
-        </div>
-        <div style="margin-top:16px;display:flex;gap:20px;flex-wrap:wrap;">
-          <span style="font-size:12px;color:var(--muted);">Legend:&nbsp;</span>
-          <span style="display:flex;align-items:center;gap:6px;font-size:12px;"><span style="width:12px;height:12px;background:#CC0000;border-radius:2px;display:inline-block;"></span>High</span>
-          <span style="display:flex;align-items:center;gap:6px;font-size:12px;"><span style="width:12px;height:12px;background:#E87070;border-radius:2px;display:inline-block;"></span>Medium</span>
-          <span style="display:flex;align-items:center;gap:6px;font-size:12px;"><span style="width:12px;height:12px;background:#7A3333;border-radius:2px;display:inline-block;"></span>Lower</span>
         </div>
       </div>
     </div>
 
-    <!-- ════════════════════════════
-         TAB 3: COMPETITORS
-    ════════════════════════════ -->
-    <div class="tab-panel" id="tab-competitors">
-      <div class="panel-heading">Competitor Intelligence</div>
-      <div class="panel-sub">Active intelligence on competitor paid media strategies</div>
+    <!-- ═══════════════════════════════════════════════ TAB 2: MARKET -->
+    <div class="tab-content" id="tab-market">
+      <div class="section-label">Market Analysis</div>
+      <div class="section-title">Mauritius Banking Landscape 2026</div>
 
-      <div class="card-title" style="margin-bottom:14px;">Intelligence Feed</div>
-      <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px;">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Competitor</th>
-              <th>Platform</th>
-              <th>Theme</th>
-              <th>Est. Monthly Spend</th>
-              <th>Trend</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Capitec</strong></td>
-              <td><span class="badge badge-red">Meta</span></td>
-              <td>Personal Loans — "Lower rate"</td>
-              <td class="mono">R8.2M</td>
-              <td class="trend-up">↑ +34%</td>
-            </tr>
-            <tr>
-              <td><strong>FNB</strong></td>
-              <td><span class="badge badge-red">Meta</span></td>
-              <td>eBucks — rugby tie-in</td>
-              <td class="mono">R12.4M</td>
-              <td class="trend-flat">→ +2%</td>
-            </tr>
-            <tr>
-              <td><strong>Standard Bank</strong></td>
-              <td><span class="badge badge-red">Meta</span></td>
-              <td>Business Banking</td>
-              <td class="mono">R9.8M</td>
-              <td class="trend-up">↑ +18%</td>
-            </tr>
-            <tr>
-              <td><strong>Nedbank</strong></td>
-              <td><span class="badge badge-red">Meta</span></td>
-              <td>Green Home Loans</td>
-              <td class="mono">R5.1M</td>
-              <td class="trend-down">↓ -8%</td>
-            </tr>
-            <tr>
-              <td><strong>Capitec</strong></td>
-              <td><span class="badge badge-amber">Google</span></td>
-              <td>Personal loans search</td>
-              <td class="mono">R6.3M</td>
-              <td class="trend-up">↑ +41%</td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Bubble Chart -->
+      <div class="chart-box mb-24">
+        <div class="chart-title">Digital Maturity vs Growth Rate <span>Bubble size = relative market share</span></div>
+        <div id="bubble-chart"></div>
       </div>
 
-      <div class="card-title" style="margin-bottom:14px;">Competitor Positioning</div>
-      <div class="comp-cards-grid">
-        <div class="comp-card">
-          <div class="comp-card-header">
-            <span class="comp-card-name">Capitec</span>
-            <span class="comp-card-tag">BIGGEST THREAT</span>
-          </div>
-          <div class="comp-card-tagline">"Simplicity &amp; Value"</div>
-          <div class="comp-card-desc">Low fees, transparent pricing, digital-first banking that resonates with value-conscious South Africans across all income segments.</div>
+      <!-- Map + Table side by side -->
+      <div class="grid-2 mb-24">
+        <!-- District Map -->
+        <div class="chart-box" style="margin-bottom:0;">
+          <div class="chart-title">Opportunity Index by District <span>Score 0–100</span></div>
+          <div id="district-map"></div>
         </div>
-        <div class="comp-card">
-          <div class="comp-card-header">
-            <span class="comp-card-name">FNB</span>
-            <span class="comp-card-tag">STRONG DIGITAL</span>
-          </div>
-          <div class="comp-card-tagline">"Loyalty &amp; Lifestyle"</div>
-          <div class="comp-card-desc">eBucks rewards programme, rugby sponsorships, and lifestyle banking experiences create strong retention and aspirational appeal.</div>
+
+        <!-- Market Table -->
+        <div class="chart-box" style="margin-bottom:0;">
+          <div class="chart-title">Competitive Benchmarks</div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Bank</th>
+                <th>Customers</th>
+                <th>Digital Adoption</th>
+                <th>App Rating</th>
+                <th>CPA Index</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>MCB</td><td>1.2M</td><td>71%</td><td>4.3 ★</td><td>100</td></tr>
+              <tr><td>SBM</td><td>580K</td><td>68%</td><td>4.1 ★</td><td>112</td></tr>
+              <tr><td>AfrAsia</td><td>45K</td><td>88%</td><td>4.6 ★</td><td>78</td></tr>
+              <tr><td>HSBC</td><td>28K</td><td>82%</td><td>4.4 ★</td><td>95</td></tr>
+              <tr class="highlight"><td><strong>ABSA ◀</strong></td><td>220K</td><td>77%</td><td>4.2 ★</td><td><strong>134</strong></td></tr>
+              <tr><td>Bank One</td><td>95K</td><td>64%</td><td>3.9 ★</td><td>118</td></tr>
+            </tbody>
+          </table>
+          <div class="table-note">⚠ CPA Index 134 = ABSA paying 34% above market average per acquisition</div>
         </div>
-        <div class="comp-card">
-          <div class="comp-card-header">
-            <span class="comp-card-name">Standard Bank</span>
-            <span class="comp-card-tag">ENTERPRISE</span>
-          </div>
-          <div class="comp-card-tagline">"Africa &amp; Business"</div>
-          <div class="comp-card-desc">Pan-African footprint and SME-focused narrative positions them as the bank for ambitious entrepreneurs and corporate clients.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════ TAB 3: COMPETITORS -->
+    <div class="tab-content" id="tab-competitors">
+      <div class="section-label">Competitive Intelligence</div>
+      <div class="section-title">Ad Intelligence Feed — August 2026</div>
+
+      <!-- Intel Table -->
+      <div class="chart-box mb-24">
+        <div class="intel-header">⬢ COMPETITOR AD INTELLIGENCE — Mauritius · August 2026</div>
+        <div style="overflow-x:auto;">
+          <table class="intel-table">
+            <thead>
+              <tr>
+                <th>Competitor</th>
+                <th>Platform</th>
+                <th>Product</th>
+                <th>Theme</th>
+                <th>Est. Reach</th>
+                <th>Trend</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>MCB</strong></td>
+                <td>Meta</td>
+                <td>MCB Juice App</td>
+                <td>"Bank smarter, live better"</td>
+                <td>280–400K/mo</td>
+                <td class="trend-up">↑ +22%</td>
+                <td><span class="status-active">🔴 Active</span></td>
+              </tr>
+              <tr>
+                <td><strong>SBM</strong></td>
+                <td>Meta</td>
+                <td>Personal Loan</td>
+                <td>"Quick approval, low rates"</td>
+                <td>180–250K/mo</td>
+                <td class="trend-up">↑ +31%</td>
+                <td><span class="status-active">🔴 Active</span></td>
+              </tr>
+              <tr>
+                <td><strong>AfrAsia</strong></td>
+                <td>Instagram</td>
+                <td>Private Banking</td>
+                <td>"Where wealth meets vision"</td>
+                <td>45–80K/mo</td>
+                <td class="trend-flat">→ +3%</td>
+                <td><span class="status-steady">🟡 Steady</span></td>
+              </tr>
+              <tr>
+                <td><strong>MCB</strong></td>
+                <td>Google</td>
+                <td>Home Loans</td>
+                <td>Search dominance — "home loan mauritius"</td>
+                <td>High</td>
+                <td class="trend-up">↑ +18%</td>
+                <td><span class="status-active">🔴 Active</span></td>
+              </tr>
+              <tr>
+                <td><strong>SBM</strong></td>
+                <td>Meta</td>
+                <td>SME Banking</td>
+                <td>"Grow your business with SBM"</td>
+                <td>120–180K/mo</td>
+                <td class="trend-up">↑ +15%</td>
+                <td><span class="status-active">🔴 Active</span></td>
+              </tr>
+              <tr class="underperform">
+                <td><strong>ABSA ◀</strong></td>
+                <td>Meta</td>
+                <td>Digi Account</td>
+                <td>"Zero fees. Full banking."</td>
+                <td>95–140K/mo</td>
+                <td class="trend-flat">→ +2%</td>
+                <td><span class="status-steady">🟡 ↓ Underperforming</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="comp-card">
-          <div class="comp-card-header">
-            <span class="comp-card-name">Nedbank</span>
-            <span class="comp-card-tag">NICHE</span>
-          </div>
-          <div class="comp-card-tagline">"Green &amp; Responsible"</div>
-          <div class="comp-card-desc">Sustainability narrative and green financing products attract ESG-conscious clients, though digital reach remains constrained.</div>
+        <div class="alert-card mt-24">
+          ⚠ Full competitor creative intelligence (ad copies, visuals, spend data) requires Meta Ad Library API access. Hseniva can activate this as part of the engagement — estimated 2-week setup.
         </div>
       </div>
 
-      <div class="card-title" style="margin-bottom:14px;">Gap Opportunities for ABSA</div>
-      <div class="gap-cards-grid">
+      <!-- Positioning Cards 2x2 -->
+      <div class="chart-title mb-16">Competitor Positioning</div>
+      <div class="grid-2 mb-24">
+        <div class="pos-card">
+          <div class="pos-card-bank">MCB</div>
+          <span class="pos-card-tag">Heritage + Scale</span>
+          <div class="pos-card-desc">Oldest and largest bank in Mauritius. MCB Juice app has become the dominant mobile banking platform. Market default — most Mauritians' first bank account. Exceptional brand trust and distribution.</div>
+        </div>
+        <div class="pos-card">
+          <div class="pos-card-bank">SBM</div>
+          <span class="pos-card-tag">Fintech Challenger</span>
+          <div class="pos-card-desc">Aggressive digital push with competitive loan rates. Expanding into India and Kenya — increasing sophistication. Fastest-growing ad spend in market. Targeting MCB's retail customer base with value messaging.</div>
+        </div>
+        <div class="pos-card">
+          <div class="pos-card-bank">AfrAsia Bank</div>
+          <span class="pos-card-tag">Ultra-Premium</span>
+          <div class="pos-card-desc">HNW and private banking focus. Minimal retail footprint — deliberately exclusive. Highest digital adoption (88%) driven by affluent, tech-savvy clientele. Not competing in mainstream retail.</div>
+        </div>
+        <div class="pos-card">
+          <div class="pos-card-bank">Bank One</div>
+          <span class="pos-card-tag">Boutique Agility</span>
+          <div class="pos-card-desc">Nimble challenger bank growing its digital capabilities. Niche focus — specific segments rather than mass market. Small but loyal customer base. Growing ad presence, particularly on social media.</div>
+        </div>
+      </div>
+
+      <!-- Gap Cards -->
+      <div class="chart-title mb-16">Strategic Gaps — ABSA's Unfair Advantages</div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
         <div class="gap-card">
-          <div class="gap-card-label">🏠 Home Loans Gap</div>
-          <div class="gap-card-text">Nobody owning "Trust + Speed" for home loans. ABSA's brand credibility + faster pre-approval messaging is unclaimed territory.</div>
+          <div class="gap-card-label">Gap 01 — Measurement Infrastructure</div>
+          <p>No competitor in Mauritius is running Meta Conversions API (CAPI). All competitors have weak conversion tracking and unattributed ad spend. ABSA can gain a significant signal quality advantage — lower CPAs and better optimisation — within 2 weeks of CAPI activation.</p>
         </div>
         <div class="gap-card">
-          <div class="gap-card-label">🚗 Vehicle Finance Gap</div>
-          <div class="gap-card-text">No bank doing proper retargeting for vehicle finance. High-intent audiences are leaving without a structured follow-up sequence.</div>
+          <div class="gap-card-label">Gap 02 — Entrepreneur Segment</div>
+          <p>Spark by Absa is the only dedicated entrepreneur banking brand in Mauritius — yet the segment is entirely uncontested creatively. No competitor is running targeted entrepreneur/SME banking creative on Meta. A focused Spark campaign would own this audience with minimal competition.</p>
         </div>
         <div class="gap-card">
-          <div class="gap-card-label">⬆️ Upgrade Segment Gap</div>
-          <div class="gap-card-text">Underserved: 35-50 professionals upgrading from Capitec. This aspirational segment needs tailored premium banking messaging.</div>
+          <div class="gap-card-label">Gap 03 — Multi-Currency Virtual Card</div>
+          <p>ABSA launched Mauritius's first multi-currency virtual card in March 2026 — a genuinely unique product feature. This is massively undermarketed relative to product quality. Digital professionals and frequent travellers are an untapped, high-intent audience with zero competitor overlap.</p>
         </div>
       </div>
     </div>
 
-    <!-- ════════════════════════════
-         TAB 4: OPPORTUNITIES
-    ════════════════════════════ -->
-    <div class="tab-panel" id="tab-opportunities">
-      <div class="panel-heading">Opportunity Matrix</div>
-      <div class="panel-sub">Demand vs. ABSA readiness across product lines</div>
+    <!-- ═══════════════════════════════════════════════ TAB 4: OPPORTUNITIES -->
+    <div class="tab-content" id="tab-opportunities">
+      <div class="section-label">Growth Opportunities</div>
+      <div class="section-title">Demand × Readiness Framework</div>
 
-      <div class="card-title" style="margin-bottom:14px;">Demand × Readiness Quadrant</div>
-      <div class="chart-wrap" id="quadrant-wrap">
-        <svg id="quadrant-chart"></svg>
+      <!-- Quadrant Chart -->
+      <div class="chart-box mb-24">
+        <div class="chart-title">Product Opportunity Quadrant <span>X = Market Demand · Y = ABSA Readiness</span></div>
+        <div id="quadrant-chart"></div>
       </div>
 
-      <div class="card-title" style="margin-bottom:14px;">Priority Audience Segments</div>
-      <div class="audience-grid">
+      <!-- Audience Cards -->
+      <div class="chart-title mb-16">Priority Audience Segments</div>
+      <div class="grid-3 mb-24">
         <div class="audience-card">
-          <div class="audience-name">Aspiring Homeowners</div>
-          <div class="audience-demo">25–40 years · R25k+ monthly income</div>
-          <div class="audience-metric">
-            <span class="audience-metric-label">Meta Audience Size</span>
-            <span class="audience-metric-val">2.8M</span>
-          </div>
-          <div class="audience-metric">
-            <span class="audience-metric-label">Target CPA</span>
-            <span class="audience-metric-val cpa-low">R680</span>
-          </div>
-          <div style="margin-top:10px;">
-            <span class="badge badge-red">Home Loans</span>
+          <div class="audience-segment">Digital Professionals</div>
+          <div class="audience-range">Age 25–40 · MUR 40K+/mo income</div>
+          <div class="audience-meta">
+            <div class="audience-row">
+              <span class="aud-key">Meta Audience</span>
+              <span class="aud-val">~85,000</span>
+            </div>
+            <div class="audience-row">
+              <span class="aud-key">CPA Estimate</span>
+              <span class="aud-val">MUR 1,200</span>
+            </div>
+            <div class="audience-row">
+              <span class="aud-key">Product</span>
+              <span class="aud-val" style="font-size:11px;">Digi Account + Multi-currency</span>
+            </div>
+            <div class="audience-row" style="border-bottom:none; padding-bottom:0;">
+              <span class="aud-edge">✦ Only multi-currency virtual card in market</span>
+            </div>
           </div>
         </div>
         <div class="audience-card">
-          <div class="audience-name">SME Owners</div>
-          <div class="audience-demo">30–55 years · R1M–R50M turnover</div>
-          <div class="audience-metric">
-            <span class="audience-metric-label">Meta Audience Size</span>
-            <span class="audience-metric-val">890K</span>
-          </div>
-          <div class="audience-metric">
-            <span class="audience-metric-label">Target CPA</span>
-            <span class="audience-metric-val" style="color:var(--amber);">R1,240</span>
-          </div>
-          <div style="margin-top:10px;">
-            <span class="badge badge-amber">SME Banking</span>
+          <div class="audience-segment">Entrepreneurs / SMEs</div>
+          <div class="audience-range">Age 30–55 · MUR 1M–50M turnover</div>
+          <div class="audience-meta">
+            <div class="audience-row">
+              <span class="aud-key">Meta Audience</span>
+              <span class="aud-val">~28,000</span>
+            </div>
+            <div class="audience-row">
+              <span class="aud-key">CPA Estimate</span>
+              <span class="aud-val">MUR 3,400</span>
+            </div>
+            <div class="audience-row">
+              <span class="aud-key">Product</span>
+              <span class="aud-val" style="font-size:11px;">Spark by Absa</span>
+            </div>
+            <div class="audience-row" style="border-bottom:none; padding-bottom:0;">
+              <span class="aud-edge">✦ Only dedicated entrepreneur banking brand</span>
+            </div>
           </div>
         </div>
         <div class="audience-card">
-          <div class="audience-name">Capitec Upgraders</div>
-          <div class="audience-demo">28–45 years · Digitally active</div>
-          <div class="audience-metric">
-            <span class="audience-metric-label">Meta Audience Size</span>
-            <span class="audience-metric-val">3.4M</span>
+          <div class="audience-segment">MCB / SBM Switchers</div>
+          <div class="audience-range">Age 28–45 · Digitally active</div>
+          <div class="audience-meta">
+            <div class="audience-row">
+              <span class="aud-key">Meta Audience</span>
+              <span class="aud-val">~180,000</span>
+            </div>
+            <div class="audience-row">
+              <span class="aud-key">CPA Estimate</span>
+              <span class="aud-val">MUR 890</span>
+            </div>
+            <div class="audience-row">
+              <span class="aud-key">Product</span>
+              <span class="aud-val" style="font-size:11px;">Digi Account (zero fees)</span>
+            </div>
+            <div class="audience-row" style="border-bottom:none; padding-bottom:0;">
+              <span class="aud-edge">✦ Superior product, lower fees than MCB</span>
+            </div>
           </div>
-          <div class="audience-metric">
-            <span class="audience-metric-label">Target CPA</span>
-            <span class="audience-metric-val cpa-low">R420</span>
+        </div>
+      </div>
+
+      <!-- Channel Heatmap -->
+      <div class="chart-box">
+        <div class="chart-title">Channel × Product Opportunity Heatmap <span>Score 0–100</span></div>
+        <div class="heatmap-wrap">
+          <div class="heatmap-grid" id="heatmap-grid">
+            <!-- Filled by JS -->
           </div>
-          <div style="margin-top:10px;">
-            <span class="badge badge-green">HIGHEST PRIORITY</span>
-          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:16px;">
+          <span style="font-size:11px; color:var(--muted);">Low</span>
+          <div style="flex:1; max-width:200px; height:8px; border-radius:4px; background: linear-gradient(90deg, #3A1A1A, #CC0000);"></div>
+          <span style="font-size:11px; color:var(--muted);">High</span>
         </div>
       </div>
     </div>
 
-    <!-- ════════════════════════════
-         TAB 5: BLUEPRINT
-    ════════════════════════════ -->
-    <div class="tab-panel" id="tab-blueprint">
-      <div class="panel-heading">Campaign Blueprint</div>
-      <div class="panel-sub">12-month performance marketing roadmap · Hseniva Media</div>
+    <!-- ═══════════════════════════════════════════════ TAB 5: BLUEPRINT -->
+    <div class="tab-content" id="tab-blueprint">
+      <div class="section-label">Growth Blueprint</div>
+      <div class="section-title">12-Month Performance Marketing Plan</div>
 
-      <div class="card-title" style="margin-bottom:14px;">5-Phase Execution Timeline</div>
-      <div class="phase-timeline">
-        <div class="phase-step active-phase">
-          <div class="phase-num">Phase 1</div>
-          <div class="phase-name">Awareness</div>
-          <div class="phase-weeks">Wks 1–4</div>
-          <div class="phase-budget">R280K</div>
-          <div class="phase-channel">Meta Video</div>
-          <div class="phase-connector"></div>
+      <!-- Phase Timeline -->
+      <div class="phases-wrap mb-32">
+        <div class="phase-item">
+          <div class="phase-num">Phase 01</div>
+          <div class="phase-name">AWARENESS</div>
+          <div class="phase-period">Weeks 1–4</div>
+          <div class="phase-budget">MUR 420K</div>
+          <div class="phase-desc">Meta Facebook + Instagram Reels. "Meet the new Absa" video campaign. Brand positioning across Mauritius.</div>
+          <div class="phase-kpi">KPI: 500K reach · 15% brand lift</div>
         </div>
-        <div class="phase-step">
-          <div class="phase-num">Phase 2</div>
-          <div class="phase-name">Consideration</div>
-          <div class="phase-weeks">Wks 3–8</div>
-          <div class="phase-budget">R420K</div>
-          <div class="phase-channel">Meta + Google</div>
-          <div class="phase-connector"></div>
+        <div class="phase-item">
+          <div class="phase-num">Phase 02</div>
+          <div class="phase-name">ACQUISITION</div>
+          <div class="phase-period">Weeks 3–8</div>
+          <div class="phase-budget">MUR 680K</div>
+          <div class="phase-desc">Meta Lead Gen + Google Search. Digi Account + Spark carousels. High-intent audience targeting.</div>
+          <div class="phase-kpi">KPI: 8,000 qualified leads · CPA &lt; MUR 1,500</div>
         </div>
-        <div class="phase-step">
-          <div class="phase-num">Phase 3</div>
-          <div class="phase-name">Conversion</div>
-          <div class="phase-weeks">Wks 5–12</div>
-          <div class="phase-budget">R650K</div>
-          <div class="phase-channel">CAPI + Smart Bidding</div>
-          <div class="phase-connector"></div>
+        <div class="phase-item">
+          <div class="phase-num">Phase 03</div>
+          <div class="phase-name">CONVERSION</div>
+          <div class="phase-period">Weeks 5–12</div>
+          <div class="phase-budget">MUR 950K</div>
+          <div class="phase-desc">Meta CAPI + Smart Bidding + WhatsApp. Dynamic personalised ads. Full attribution tracking.</div>
+          <div class="phase-kpi">KPI: 2,500 new accounts opened</div>
         </div>
-        <div class="phase-step">
-          <div class="phase-num">Phase 4</div>
-          <div class="phase-name">Retention</div>
-          <div class="phase-weeks">Ongoing</div>
-          <div class="phase-budget">R180K/mo</div>
-          <div class="phase-channel">Custom Audiences</div>
-          <div class="phase-connector"></div>
+        <div class="phase-item">
+          <div class="phase-num">Phase 04</div>
+          <div class="phase-name">RETENTION</div>
+          <div class="phase-period">Ongoing</div>
+          <div class="phase-budget">MUR 280K/mo</div>
+          <div class="phase-desc">Custom Audiences + email automation. Cross-sell sequences for existing customers.</div>
+          <div class="phase-kpi">KPI: 22% cross-sell uplift</div>
         </div>
-        <div class="phase-step">
-          <div class="phase-num">Phase 5</div>
-          <div class="phase-name">Intelligence</div>
-          <div class="phase-weeks">Ongoing</div>
-          <div class="phase-budget" style="color:var(--green);">Live Data</div>
-          <div class="phase-channel">Hseniva Dashboard</div>
+        <div class="phase-item">
+          <div class="phase-num">Phase 05</div>
+          <div class="phase-name">INTELLIGENCE</div>
+          <div class="phase-period">Ongoing</div>
+          <div class="phase-budget" style="color: var(--ok);">Included</div>
+          <div class="phase-desc">Hseniva dashboard + competitor monitoring + weekly reports + quarterly strategy reviews.</div>
+          <div class="phase-kpi">KPI: Full attribution · Real-time insights</div>
         </div>
       </div>
 
-      <div class="card-title" style="margin-bottom:14px;">Budget &amp; Expected Returns</div>
-      <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px;">
-        <table class="data-table">
+      <!-- Investment Table -->
+      <div class="chart-box mb-24">
+        <div class="chart-title">Investment Summary</div>
+        <table class="inv-table">
           <thead>
             <tr>
               <th>Phase</th>
@@ -1069,525 +1505,664 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Awareness</td>
-              <td>4 weeks</td>
-              <td class="mono">R280K</td>
-              <td>4M reach, 15% brand lift</td>
-            </tr>
-            <tr>
-              <td>Consideration</td>
-              <td>6 weeks</td>
-              <td class="mono">R420K</td>
-              <td>8,500 leads</td>
-            </tr>
-            <tr>
-              <td>Conversion</td>
-              <td>8 weeks</td>
-              <td class="mono">R650K</td>
-              <td>1,200 accounts (R12M value)</td>
-            </tr>
-            <tr>
-              <td>Retention</td>
-              <td>Ongoing</td>
-              <td class="mono">R180K/mo</td>
-              <td>15% cross-sell uplift</td>
-            </tr>
-            <tr style="background:#200F0F;font-weight:700;">
-              <td style="color:var(--accent);">Total Year 1</td>
-              <td style="color:var(--accent);">12 months</td>
-              <td class="mono" style="color:var(--accent);">~R3.5M</td>
-              <td style="color:var(--green);">~R48M customer LTV</td>
-            </tr>
+            <tr><td>Awareness</td><td>4 weeks</td><td>MUR 420K</td><td>500K reach</td></tr>
+            <tr><td>Acquisition</td><td>6 weeks</td><td>MUR 680K</td><td>8,000 qualified leads</td></tr>
+            <tr><td>Conversion</td><td>8 weeks</td><td>MUR 950K</td><td>2,500 new accounts</td></tr>
+            <tr><td>Retention</td><td>Ongoing</td><td>MUR 280K/mo</td><td>22% cross-sell uplift</td></tr>
+            <tr><td>Year 1 Total</td><td>12 months</td><td>~MUR 5.5M</td><td>~MUR 75M LTV</td></tr>
           </tbody>
         </table>
       </div>
 
-      <div class="card-title" style="margin-bottom:14px;">Cumulative ROI Projection</div>
-      <div class="chart-wrap" id="roi-wrap">
-        <svg id="roi-chart"></svg>
+      <!-- ROI Chart -->
+      <div class="chart-box">
+        <div class="chart-title">Projected ROI Trajectory <span>Month-by-month multiplier · Year 1</span></div>
+        <div id="roi-chart"></div>
       </div>
     </div>
 
-  </div><!-- /main -->
+    <!-- ═══════════════════════════════════════════════ TAB 6: WHY HSENIVA -->
+    <div class="tab-content" id="tab-why-hseniva">
+      <div class="section-label">About Hseniva Media</div>
+      <div class="section-title">Why Hseniva for Absa Mauritius</div>
 
-  <!-- Footer -->
-  <div class="footer">
-    Prepared by <a href="https://hseniva.com" target="_blank">Hseniva Media</a> · hseniva.com · Confidential · 2026
-  </div>
-</div>
+      <!-- Capability Cards -->
+      <div class="cap-card">
+        <div class="cap-number">01 — CAPABILITY</div>
+        <div class="cap-title">DATA INFRASTRUCTURE</div>
+        <div class="cap-tags">Meta Conversions API · Real-time dashboards · Competitor ad monitoring · Attribution modelling</div>
+        <div class="cap-quote">We don't just run ads — we build the intelligence layer that makes every rupee accountable.</div>
+      </div>
+
+      <div class="cap-card">
+        <div class="cap-number">02 — CAPABILITY</div>
+        <div class="cap-title">CREATIVE INTELLIGENCE</div>
+        <div class="cap-tags">AI-powered creative testing · Audience-first strategy · Creative fatigue monitoring · Local market expertise</div>
+        <div class="cap-quote">Creative that performs, not just creative that looks good.</div>
+      </div>
+
+      <div class="cap-card">
+        <div class="cap-number">03 — CAPABILITY</div>
+        <div class="cap-title">GROWTH EXECUTION</div>
+        <div class="cap-tags">Full-funnel management: Meta + Google + WhatsApp · Weekly optimisation · Monthly executive reporting · Dedicated intelligence analyst</div>
+        <div class="cap-quote">Strategy without execution is just PowerPoint. We do both.</div>
+      </div>
+
+      <!-- Case Study -->
+      <div class="case-card">
+        <div class="case-label">Case Study — Financial Services</div>
+        <div class="case-row">
+          <span class="case-key">Client</span>
+          <span class="case-val">Financial services firm, Brazil</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">Challenge</span>
+          <span class="case-val">Qualified lead tracking gaps, no attribution across Meta campaigns</span>
+        </div>
+        <div class="case-row">
+          <span class="case-key">Delivered</span>
+          <span class="case-val">Full Meta CAPI integration, custom conversion tracking, 23% CPA reduction</span>
+        </div>
+        <div class="case-row" style="margin-bottom:0;">
+          <span class="case-key">Result</span>
+          <span class="case-val" style="color: var(--ok);">Real-time dashboard with full attribution across all Meta campaigns</span>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-section">
+        <div class="cta-title">Ready to activate the intelligence layer for Absa Mauritius?</div>
+        <a href="mailto:avinesh@hseniva.com" class="cta-btn">Schedule Strategy Session — avinesh@hseniva.com</a>
+      </div>
+
+    </div>
+    <!-- END TABS -->
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    Prepared exclusively for Absa Bank Mauritius &nbsp;·&nbsp; Hseniva Media &nbsp;·&nbsp; hseniva.com &nbsp;·&nbsp; Confidential &nbsp;·&nbsp; August 2026
+  </footer>
+
+</div><!-- /#app -->
 
 <!-- D3 Tooltip -->
 <div class="d3-tooltip" id="d3-tooltip"></div>
+<div id="map-tooltip"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   AUTH
-═══════════════════════════════════════════════════════════ */
-(function () {
-  const screen = document.getElementById('login-screen');
-  const dash   = document.getElementById('dashboard');
+/* ═══════════════════════════════════════════════════════ AUTH */
+(function() {
+  const key = 'absa_mu_auth';
+  const U = 'Avinesh';
+  const P = 'Absa2026';
 
-  function showDash() {
-    screen.classList.add('hidden');
-    dash.classList.add('visible');
-    initCharts();
-    animateBars();
-    startClock();
+  const overlay = document.getElementById('login-overlay');
+  const app = document.getElementById('app');
+  const loginBox = document.getElementById('login-box');
+  const loginBtn = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-error');
+
+  function activate() {
+    overlay.style.display = 'none';
+    app.style.display = 'flex';
+    initClock();
+    initSignalBars();
+    initHeatmap();
   }
 
-  // Check session
-  if (sessionStorage.getItem('absa_auth') === '1') {
-    showDash();
-    return;
+  if (sessionStorage.getItem(key) === '1') {
+    activate();
   }
 
-  document.getElementById('login-btn').addEventListener('click', tryLogin);
-  document.getElementById('l-pass').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
-
-  function tryLogin() {
-    const u = document.getElementById('l-user').value.trim();
-    const p = document.getElementById('l-pass').value;
-    const err = document.getElementById('login-error');
-    if (u === 'Avinesh' && p === 'Absa2026') {
-      sessionStorage.setItem('absa_auth', '1');
-      err.textContent = '';
-      showDash();
+  function attempt() {
+    const u = document.getElementById('login-user').value.trim();
+    const p = document.getElementById('login-pass').value;
+    if (u === U && p === P) {
+      sessionStorage.setItem(key, '1');
+      activate();
     } else {
-      err.textContent = 'Invalid credentials. Please try again.';
-      document.getElementById('l-pass').value = '';
-      document.getElementById('l-pass').focus();
+      errEl.classList.add('show');
+      loginBox.classList.remove('shake');
+      void loginBox.offsetWidth;
+      loginBox.classList.add('shake');
+      setTimeout(() => loginBox.classList.remove('shake'), 500);
     }
   }
+
+  loginBtn.addEventListener('click', attempt);
+  document.getElementById('login-pass').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') attempt();
+  });
+  document.getElementById('login-user').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('login-pass').focus();
+  });
 })();
 
-/* ═══════════════════════════════════════════════════════════
-   CLOCK
-═══════════════════════════════════════════════════════════ */
-function startClock() {
+/* ═══════════════════════════════════════════════════════ LIVE CLOCK */
+function initClock() {
+  const el = document.getElementById('live-clock');
   function tick() {
     const now = new Date();
-    const h = String(now.getHours()).padStart(2,'0');
-    const m = String(now.getMinutes()).padStart(2,'0');
-    const s = String(now.getSeconds()).padStart(2,'0');
-    document.getElementById('nav-time').textContent = `${h}:${m}:${s}`;
+    el.textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
   tick();
   setInterval(tick, 1000);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   TABS
-═══════════════════════════════════════════════════════════ */
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+/* ═══════════════════════════════════════════════════════ TABS */
+document.querySelectorAll('.tab-pill').forEach(function(pill) {
+  pill.addEventListener('click', function() {
+    const tab = this.dataset.tab;
+    document.querySelectorAll('.tab-pill').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    this.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
 
-    // Re-init charts if needed (they may not have been sized yet)
-    if (btn.dataset.tab === 'market') renderBubble();
-    if (btn.dataset.tab === 'opportunities') renderQuadrant();
-    if (btn.dataset.tab === 'blueprint') renderROI();
+    // Init charts on first show
+    if (tab === 'market' && !window._marketInit) {
+      window._marketInit = true;
+      setTimeout(function() { initBubbleChart(); initDistrictMap(); }, 50);
+    }
+    if (tab === 'opportunities' && !window._oppsInit) {
+      window._oppsInit = true;
+      setTimeout(function() { initQuadrant(); }, 50);
+    }
+    if (tab === 'blueprint' && !window._blueprintInit) {
+      window._blueprintInit = true;
+      setTimeout(function() { initROIChart(); }, 50);
+    }
   });
 });
 
-/* ═══════════════════════════════════════════════════════════
-   SIGNAL BARS ANIMATION
-═══════════════════════════════════════════════════════════ */
-function animateBars() {
-  setTimeout(() => {
-    document.querySelectorAll('.signal-bar-fill').forEach(el => {
-      el.style.width = el.dataset.width + '%';
+/* ═══════════════════════════════════════════════════════ SIGNAL BARS */
+function initSignalBars() {
+  setTimeout(function() {
+    document.querySelectorAll('.signal-fill').forEach(function(el) {
+      var pct = el.dataset.pct;
+      el.style.width = pct + '%';
     });
   }, 200);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   D3 TOOLTIP HELPER
-═══════════════════════════════════════════════════════════ */
-const tooltip = document.getElementById('d3-tooltip');
-function showTip(html, x, y) {
-  tooltip.innerHTML = html;
-  tooltip.classList.add('visible');
-  tooltip.style.left = (x + 14) + 'px';
-  tooltip.style.top  = (y - 28) + 'px';
-}
-function hideTip() { tooltip.classList.remove('visible'); }
-
-/* ═══════════════════════════════════════════════════════════
-   CHART INIT CONTROLLER
-═══════════════════════════════════════════════════════════ */
-let bubblesDrawn = false, quadrantDrawn = false, roiDrawn = false;
-
-function initCharts() {
-  renderBubble();
-}
-
-/* ═══════════════════════════════════════════════════════════
-   BUBBLE CHART — Market Competitive Positioning
-═══════════════════════════════════════════════════════════ */
-function renderBubble() {
-  const wrap = document.getElementById('bubble-wrap');
-  if (!wrap) return;
-  const W = wrap.clientWidth - 40;
-  const H = Math.max(340, Math.min(420, W * 0.55));
-
-  d3.select('#bubble-chart').selectAll('*').remove();
-
-  const margin = { top: 30, right: 40, bottom: 50, left: 55 };
-  const iW = W - margin.left - margin.right;
-  const iH = H - margin.top - margin.bottom;
-
-  const svg = d3.select('#bubble-chart')
-    .attr('width', W)
-    .attr('height', H);
-
-  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-  const data = [
-    { name: 'Capitec',       x: 12, y: 78, r: 25.2, color: '#E63946', label: 'Capitec' },
-    { name: 'FNB',           x:  6, y: 65, r: 12,   color: '#4361EE', label: 'FNB' },
-    { name: 'Standard Bank', x:  4, y: 55, r: 14,   color: '#2DC653', label: 'Standard Bank' },
-    { name: 'Nedbank',       x:  3, y: 48, r:  8,   color: '#F77F00', label: 'Nedbank' },
-    { name: 'ABSA',          x:  5, y: 52, r: 11,   color: '#CC0000', label: 'ABSA — You Are Here' },
+/* ═══════════════════════════════════════════════════════ HEATMAP */
+function initHeatmap() {
+  var channels = ['Facebook', 'Instagram', 'Google Search', 'Google Display', 'WhatsApp', 'Content'];
+  var products = ['Digi Account', 'Spark', 'Home Loans', 'Multi-currency', 'Wealth'];
+  var scores = [
+    [92, 88, 72, 80, 45],
+    [85, 75, 50, 90, 58],
+    [78, 65, 90, 55, 70],
+    [60, 45, 68, 42, 38],
+    [70, 82, 55, 60, 40],
+    [65, 78, 72, 55, 80]
   ];
 
-  const xScale = d3.scaleLinear().domain([0, 16]).range([0, iW]);
-  const yScale = d3.scaleLinear().domain([30, 90]).range([iH, 0]);
-  const rScale = d3.scaleSqrt().domain([0, 30]).range([0, 52]);
+  var grid = document.getElementById('heatmap-grid');
+  grid.innerHTML = '';
 
-  // Grid lines
-  g.append('g').attr('class','grid')
-    .call(d3.axisLeft(yScale).tickSize(-iW).ticks(5).tickFormat(''))
-    .selectAll('line').style('stroke','#3A2020').style('stroke-dasharray','3,3');
-  g.select('.grid .domain').remove();
+  // Empty corner
+  var corner = document.createElement('div');
+  corner.className = 'hm-header';
+  grid.appendChild(corner);
 
-  g.append('g').attr('class','grid')
-    .attr('transform', `translate(0,${iH})`)
-    .call(d3.axisBottom(xScale).tickSize(-iH).ticks(6).tickFormat(''))
-    .selectAll('line').style('stroke','#3A2020').style('stroke-dasharray','3,3');
-  g.select('.grid:nth-child(2) .domain').remove();
-
-  // Axes
-  const xAxis = g.append('g').attr('transform',`translate(0,${iH})`).call(d3.axisBottom(xScale).ticks(6));
-  xAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
-  xAxis.selectAll('line,path').style('stroke','#3A2020');
-
-  const yAxis = g.append('g').call(d3.axisLeft(yScale).ticks(5));
-  yAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
-  yAxis.selectAll('line,path').style('stroke','#3A2020');
-
-  // Axis labels
-  svg.append('text')
-    .attr('x', margin.left + iW/2).attr('y', H - 4)
-    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
-    .text('Customer Growth Rate (%)');
-  svg.append('text')
-    .attr('transform','rotate(-90)')
-    .attr('x', -(margin.top + iH/2)).attr('y', 14)
-    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
-    .text('Digital Engagement Score');
-
-  // Bubbles
-  const circles = g.selectAll('.bubble').data(data).enter().append('g').attr('class','bubble');
-
-  circles.append('circle')
-    .attr('cx', d => xScale(d.x))
-    .attr('cy', d => yScale(d.y))
-    .attr('r', 0)
-    .style('fill', d => d.color)
-    .style('opacity', 0.72)
-    .style('cursor','pointer')
-    .on('mousemove', (event, d) => {
-      showTip(`<strong>${d.label}</strong>Growth: ${d.x}%<br>Engagement: ${d.y}<br>Customers: ${d.r}M`, event.clientX, event.clientY);
-    })
-    .on('mouseleave', hideTip)
-    .transition().duration(900).ease(d3.easeBounceOut)
-    .attr('r', d => rScale(d.r));
-
-  // Labels
-  circles.append('text')
-    .attr('x', d => xScale(d.x))
-    .attr('y', d => yScale(d.y) - rScale(d.r) - 6)
-    .style('fill', d => d.color)
-    .style('font-size', d => d.name === 'ABSA' ? '12px' : '11px')
-    .style('font-weight', d => d.name === 'ABSA' ? '700' : '500')
-    .style('text-anchor','middle')
-    .style('font-family','Inter, sans-serif')
-    .text(d => d.label);
-
-  bubblesDrawn = true;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   QUADRANT CHART — Demand × Readiness
-═══════════════════════════════════════════════════════════ */
-function renderQuadrant() {
-  const wrap = document.getElementById('quadrant-wrap');
-  if (!wrap) return;
-  const W = wrap.clientWidth - 40;
-  const H = Math.max(360, Math.min(440, W * 0.6));
-
-  d3.select('#quadrant-chart').selectAll('*').remove();
-
-  const margin = { top: 30, right: 40, bottom: 50, left: 55 };
-  const iW = W - margin.left - margin.right;
-  const iH = H - margin.top - margin.bottom;
-
-  const svg = d3.select('#quadrant-chart')
-    .attr('width', W)
-    .attr('height', H);
-
-  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-  const data = [
-    { name: 'Home Loans',     x: 82, y: 75, color: '#CC0000' },
-    { name: 'Personal Loans', x: 78, y: 45, color: '#9A8A8A' },
-    { name: 'Credit Cards',   x: 71, y: 68, color: '#CC0000' },
-    { name: 'SME Banking',    x: 55, y: 80, color: '#9A8A8A' },
-    { name: 'Vehicle Finance',x: 65, y: 55, color: '#CC0000' },
-    { name: 'Wealth Mgmt',    x: 42, y: 72, color: '#9A8A8A' },
-    { name: 'Basic Savings',  x: 88, y: 35, color: '#9A8A8A' },
-  ];
-
-  const xScale = d3.scaleLinear().domain([0,100]).range([0, iW]);
-  const yScale = d3.scaleLinear().domain([0,100]).range([iH, 0]);
-
-  // Quadrant backgrounds
-  const quadrants = [
-    { x1:0.5, y1:0,   x2:0.5, y2:0.5, label:'Build Capability', lx: 0.25, ly: 0.25, align:'middle' },
-    { x1:0.5, y1:0,   x2:1,   y2:0.5, label:'Act Now',           lx: 0.75, ly: 0.25, align:'middle' },
-    { x1:0,   y1:0.5, x2:0.5, y2:1,   label:'Deprioritise',      lx: 0.25, ly: 0.75, align:'middle' },
-    { x1:0.5, y1:0.5, x2:1,   y2:1,   label:'Quick Wins',        lx: 0.75, ly: 0.75, align:'middle' },
-  ];
-
-  const qColors = ['#1A1030','#200F0F','#141414','#071A0F'];
-  const qLabelColors = ['#6060A0','#CC3333','#606060','#00A040'];
-
-  g.append('rect').attr('x',0).attr('y',0).attr('width',iW/2).attr('height',iH/2).style('fill','#1A1030').style('opacity',0.4);
-  g.append('rect').attr('x',iW/2).attr('y',0).attr('width',iW/2).attr('height',iH/2).style('fill','#200F0F').style('opacity',0.5);
-  g.append('rect').attr('x',0).attr('y',iH/2).attr('width',iW/2).attr('height',iH/2).style('fill','#141414').style('opacity',0.4);
-  g.append('rect').attr('x',iW/2).attr('y',iH/2).attr('width',iW/2).attr('height',iH/2).style('fill','#071A0F').style('opacity',0.45);
-
-  // Quadrant labels
-  const qlabels = [
-    { text: 'Build Capability', x: iW * 0.25, y: iH * 0.14, color: '#7070B0' },
-    { text: 'Act Now ★',        x: iW * 0.75, y: iH * 0.14, color: '#FF5555' },
-    { text: 'Deprioritise',     x: iW * 0.25, y: iH * 0.88, color: '#606060' },
-    { text: 'Quick Wins',       x: iW * 0.75, y: iH * 0.88, color: '#00B860' },
-  ];
-  qlabels.forEach(ql => {
-    g.append('text')
-      .attr('x', ql.x).attr('y', ql.y)
-      .style('fill', ql.color)
-      .style('font-size','12px')
-      .style('font-weight','700')
-      .style('text-anchor','middle')
-      .style('text-transform','uppercase')
-      .style('letter-spacing','0.06em')
-      .style('font-family','Inter, sans-serif')
-      .text(ql.text);
+  // Product headers
+  products.forEach(function(p) {
+    var h = document.createElement('div');
+    h.className = 'hm-header';
+    h.textContent = p;
+    grid.appendChild(h);
   });
 
-  // Center lines
-  g.append('line').attr('x1',iW/2).attr('y1',0).attr('x2',iW/2).attr('y2',iH).style('stroke','#3A2020').style('stroke-width',1.5);
-  g.append('line').attr('x1',0).attr('y1',iH/2).attr('x2',iW).attr('y2',iH/2).style('stroke','#3A2020').style('stroke-width',1.5);
+  // Rows
+  channels.forEach(function(ch, ri) {
+    var lbl = document.createElement('div');
+    lbl.className = 'hm-row-label';
+    lbl.textContent = ch;
+    grid.appendChild(lbl);
 
-  // Grid
-  g.append('g').call(d3.axisLeft(yScale).tickSize(-iW).ticks(5).tickFormat(''))
-    .selectAll('line').style('stroke','#2A2020').style('stroke-dasharray','2,4');
-  g.select('.domain').remove();
-
-  g.append('g').attr('transform',`translate(0,${iH})`)
-    .call(d3.axisBottom(xScale).tickSize(-iH).ticks(5).tickFormat(''))
-    .selectAll('line').style('stroke','#2A2020').style('stroke-dasharray','2,4');
-
-  // Axes
-  const xAxis = g.append('g').attr('transform',`translate(0,${iH})`).call(d3.axisBottom(xScale).ticks(5));
-  xAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
-  xAxis.selectAll('line,path').style('stroke','#3A2020');
-
-  const yAxis = g.append('g').call(d3.axisLeft(yScale).ticks(5));
-  yAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
-  yAxis.selectAll('line,path').style('stroke','#3A2020');
-
-  svg.append('text').attr('x', margin.left + iW/2).attr('y', H - 4)
-    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
-    .text('Audience Demand');
-  svg.append('text')
-    .attr('transform','rotate(-90)')
-    .attr('x', -(margin.top + iH/2)).attr('y', 14)
-    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
-    .text('ABSA Readiness');
-
-  // Points
-  const pts = g.selectAll('.qpt').data(data).enter().append('g').attr('class','qpt');
-
-  pts.append('circle')
-    .attr('cx', d => xScale(d.x))
-    .attr('cy', d => yScale(d.y))
-    .attr('r', 0)
-    .style('fill', d => d.color)
-    .style('opacity', 0.85)
-    .style('cursor','pointer')
-    .on('mousemove', (event, d) => {
-      showTip(`<strong>${d.name}</strong>Demand: ${d.x}<br>Readiness: ${d.y}`, event.clientX, event.clientY);
-    })
-    .on('mouseleave', hideTip)
-    .transition().duration(700).delay((d,i) => i*80)
-    .attr('r', 8);
-
-  pts.append('text')
-    .attr('x', d => xScale(d.x) + 11)
-    .attr('y', d => yScale(d.y) + 4)
-    .style('fill','#F5F0F0')
-    .style('font-size','11px')
-    .style('font-weight', d => d.color === '#CC0000' ? '700' : '400')
-    .style('font-family','Inter, sans-serif')
-    .text(d => d.name);
-
-  quadrantDrawn = true;
+    products.forEach(function(_, ci) {
+      var score = scores[ri][ci];
+      var cell = document.createElement('div');
+      cell.className = 'hm-cell';
+      cell.textContent = score;
+      var t = score / 100;
+      cell.style.backgroundColor = interpolateColor('#1C0D0D', '#CC0000', t);
+      cell.title = ch + ' × ' + products[ci] + ' = ' + score;
+      grid.appendChild(cell);
+    });
+  });
 }
 
-/* ═══════════════════════════════════════════════════════════
-   ROI LINE CHART
-═══════════════════════════════════════════════════════════ */
-function renderROI() {
-  const wrap = document.getElementById('roi-wrap');
-  if (!wrap) return;
-  const W = wrap.clientWidth - 40;
-  const H = Math.max(300, Math.min(380, W * 0.5));
+function interpolateColor(c1, c2, t) {
+  var r1 = parseInt(c1.slice(1,3),16), g1 = parseInt(c1.slice(3,5),16), b1 = parseInt(c1.slice(5,7),16);
+  var r2 = parseInt(c2.slice(1,3),16), g2 = parseInt(c2.slice(3,5),16), b2 = parseInt(c2.slice(5,7),16);
+  var r = Math.round(r1 + (r2-r1)*t);
+  var g = Math.round(g1 + (g2-g1)*t);
+  var b = Math.round(b1 + (b2-b1)*t);
+  return 'rgb('+r+','+g+','+b+')';
+}
 
-  d3.select('#roi-chart').selectAll('*').remove();
+/* ═══════════════════════════════════════════════════════ BUBBLE CHART */
+function initBubbleChart() {
+  var container = document.getElementById('bubble-chart');
+  container.innerHTML = '';
+  var W = container.offsetWidth || 700;
+  var H = 380;
+  var margin = {top: 30, right: 40, bottom: 50, left: 60};
+  var w = W - margin.left - margin.right;
+  var h = H - margin.top - margin.bottom;
 
-  const margin = { top: 30, right: 60, bottom: 50, left: 60 };
-  const iW = W - margin.left - margin.right;
-  const iH = H - margin.top - margin.bottom;
+  var data = [
+    {name: 'MCB', x: 72, y: 4, r: 42, color: '#1A5276'},
+    {name: 'SBM', x: 68, y: 6, r: 28, color: '#117A65'},
+    {name: 'AfrAsia', x: 75, y: 9, r: 12, color: '#7D3C98'},
+    {name: 'HSBC', x: 65, y: 2, r: 10, color: '#566573'},
+    {name: 'Bank One', x: 55, y: 7, r: 8, color: '#2ECC71'},
+    {name: 'ABSA ▲', x: 78, y: 5, r: 18, color: '#CC0000'}
+  ];
 
-  const roiData = [0.0, -0.3, -0.1, 0.8, 2.1, 3.9, 5.4, 7.2, 9.1, 10.8, 12.3, 13.7];
-  const months  = roiData.map((v,i) => ({ month: i+1, val: v }));
+  var svg = d3.select(container).append('svg')
+    .attr('width', W).attr('height', H);
 
-  const svg = d3.select('#roi-chart')
-    .attr('width', W)
-    .attr('height', H);
+  var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-  const xScale = d3.scaleLinear().domain([1,12]).range([0, iW]);
-  const yScale = d3.scaleLinear().domain([-1, 15]).range([iH, 0]);
+  var xScale = d3.scaleLinear().domain([40, 90]).range([0, w]);
+  var yScale = d3.scaleLinear().domain([0, 12]).range([h, 0]);
 
   // Grid
-  g.append('g').call(d3.axisLeft(yScale).tickSize(-iW).ticks(8).tickFormat(''))
-    .selectAll('line').style('stroke','#2A1515').style('stroke-dasharray','3,3');
-  g.select('.domain').remove();
+  g.append('g').attr('class', 'grid')
+    .attr('transform', 'translate(0,' + h + ')')
+    .call(d3.axisBottom(xScale).tickSize(-h).tickFormat(''));
+
+  g.append('g').attr('class', 'grid')
+    .call(d3.axisLeft(yScale).tickSize(-w).tickFormat(''));
+
+  // Axes
+  g.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + h + ')')
+    .call(d3.axisBottom(xScale).ticks(6))
+    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+
+  g.append('g').attr('class', 'axis')
+    .call(d3.axisLeft(yScale).ticks(6))
+    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+
+  // Axis labels
+  svg.append('text').attr('x', W/2).attr('y', H - 6).attr('text-anchor', 'middle')
+    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('Digital Maturity Index');
+
+  svg.append('text').attr('transform', 'rotate(-90)').attr('x', -(H/2)).attr('y', 14)
+    .attr('text-anchor', 'middle')
+    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('Growth Rate % YoY');
+
+  // Tooltip
+  var tip = document.getElementById('d3-tooltip');
+
+  // Bubbles
+  g.selectAll('circle.bubble')
+    .data(data).enter().append('circle')
+    .attr('class', 'bubble')
+    .attr('cx', function(d) { return xScale(d.x); })
+    .attr('cy', function(d) { return yScale(d.y); })
+    .attr('r', function(d) { return d.r; })
+    .attr('fill', function(d) { return d.color; })
+    .attr('fill-opacity', 0.75)
+    .attr('stroke', function(d) { return d.color; })
+    .attr('stroke-width', 1.5)
+    .style('cursor', 'pointer')
+    .on('mousemove', function(event, d) {
+      tip.style.display = 'block';
+      tip.style.left = (event.clientX + 14) + 'px';
+      tip.style.top = (event.clientY - 10) + 'px';
+      tip.innerHTML = '<div class="tip-name">' + d.name + '</div>'
+        + '<div>Digital Maturity: <b>' + d.x + '</b></div>'
+        + '<div>Growth Rate: <b>' + d.y + '% YoY</b></div>'
+        + '<div>Market Share: <b>' + d.r + ' (relative)</b></div>';
+    })
+    .on('mouseleave', function() { tip.style.display = 'none'; });
+
+  // Labels
+  g.selectAll('text.bubble-label')
+    .data(data).enter().append('text')
+    .attr('class', 'bubble-label')
+    .attr('x', function(d) { return xScale(d.x); })
+    .attr('y', function(d) { return yScale(d.y) - d.r - 5; })
+    .attr('text-anchor', 'middle')
+    .style('fill', function(d) { return d.color; })
+    .style('font-size', '11px')
+    .style('font-family', 'Inter')
+    .style('font-weight', '700')
+    .text(function(d) { return d.name; });
+}
+
+/* ═══════════════════════════════════════════════════════ DISTRICT MAP */
+function initDistrictMap() {
+  var container = document.getElementById('district-map');
+  container.innerHTML = '';
+  var W = container.offsetWidth || 340;
+  var H = 340;
+
+  var colorScale = d3.scaleLinear()
+    .domain([0, 100])
+    .range(['#3A1A1A', '#CC0000']);
+
+  // Stylized district blocks (rough Mauritius layout, not exact geo)
+  var districts = [
+    { name: 'Port Louis',        score: 92, x: 55,  y: 80,  w: 100, h: 55 },
+    { name: 'Pamplemousses',     score: 65, x: 120, y: 30,  w: 110, h: 55 },
+    { name: 'Rivière du Rempart',score: 45, x: 220, y: 60,  w: 110, h: 55 },
+    { name: 'Moka',              score: 78, x: 120, y: 130, w: 100, h: 50 },
+    { name: 'Plaines Wilhems',   score: 88, x: 55,  y: 155, w: 100, h: 50 },
+    { name: 'Flacq',             score: 58, x: 215, y: 130, w: 110, h: 55 },
+    { name: 'Black River',       score: 61, x: 30,  y: 225, w: 100, h: 55 },
+    { name: 'Grand Port',        score: 52, x: 155, y: 235, w: 110, h: 55 },
+    { name: 'Savanne',           score: 38, x: 90,  y: 295, w: 100, h: 50 }
+  ];
+
+  var mapTip = document.getElementById('map-tooltip');
+
+  var svg = d3.select(container).append('svg')
+    .attr('width', W).attr('height', H)
+    .style('display', 'block').style('margin', '0 auto');
+
+  // Scale to container
+  var scaleX = W / 380;
+  var scaleY = H / 370;
+
+  districts.forEach(function(d) {
+    var g = svg.append('g')
+      .style('cursor', 'pointer')
+      .on('mousemove', function(event) {
+        mapTip.style.display = 'block';
+        mapTip.style.left = (event.clientX + 14) + 'px';
+        mapTip.style.top = (event.clientY - 10) + 'px';
+        mapTip.innerHTML = '<strong style="color:#FF3333;">' + d.name + '</strong><br>Opportunity Score: <strong>' + d.score + '</strong>';
+      })
+      .on('mouseleave', function() { mapTip.style.display = 'none'; });
+
+    g.append('rect')
+      .attr('x', d.x * scaleX)
+      .attr('y', d.y * scaleY)
+      .attr('width', d.w * scaleX)
+      .attr('height', d.h * scaleY)
+      .attr('rx', 4)
+      .attr('fill', colorScale(d.score))
+      .attr('stroke', '#0A0606')
+      .attr('stroke-width', 2);
+
+    g.append('text')
+      .attr('x', (d.x + d.w/2) * scaleX)
+      .attr('y', (d.y + d.h/2 - 7) * scaleY)
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
+      .style('fill', '#F0EBEB')
+      .style('font-size', '9px')
+      .style('font-family', 'Inter')
+      .style('font-weight', '600')
+      .style('pointer-events', 'none')
+      .text(d.name);
+
+    g.append('text')
+      .attr('x', (d.x + d.w/2) * scaleX)
+      .attr('y', (d.y + d.h/2 + 10) * scaleY)
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
+      .style('fill', '#F0EBEB')
+      .style('font-size', '11px')
+      .style('font-family', 'IBM Plex Mono')
+      .style('font-weight', '700')
+      .style('pointer-events', 'none')
+      .text(d.score);
+  });
+
+  // Legend
+  var defs = svg.append('defs');
+  var grad = defs.append('linearGradient').attr('id', 'mapGrad');
+  grad.append('stop').attr('offset', '0%').attr('stop-color', '#3A1A1A');
+  grad.append('stop').attr('offset', '100%').attr('stop-color', '#CC0000');
+
+  svg.append('rect').attr('x', 20).attr('y', H - 24).attr('width', 100).attr('height', 10).attr('rx', 3).attr('fill', 'url(#mapGrad)');
+  svg.append('text').attr('x', 20).attr('y', H - 28).style('fill', '#8A7A7A').style('font-size', '9px').style('font-family', 'Inter').text('Low opportunity');
+  svg.append('text').attr('x', 125).attr('y', H - 28).style('fill', '#8A7A7A').style('font-size', '9px').style('font-family', 'Inter').text('High');
+}
+
+/* ═══════════════════════════════════════════════════════ QUADRANT CHART */
+function initQuadrant() {
+  var container = document.getElementById('quadrant-chart');
+  container.innerHTML = '';
+  var W = container.offsetWidth || 700;
+  var H = 420;
+  var margin = {top: 40, right: 40, bottom: 60, left: 60};
+  var w = W - margin.left - margin.right;
+  var h = H - margin.top - margin.bottom;
+
+  var points = [
+    {name: 'Digi Account',       x: 85, y: 88, color: '#CC0000'},
+    {name: 'Multi-currency Card',x: 72, y: 90, color: '#CC0000'},
+    {name: 'Spark Entrepreneur', x: 68, y: 82, color: '#CC0000'},
+    {name: 'Home Loans',         x: 78, y: 65, color: '#E87070'},
+    {name: 'Personal Loans',     x: 82, y: 55, color: '#E87070'},
+    {name: 'SME Banking',        x: 60, y: 75, color: '#7A8FCC'},
+    {name: 'Wealth Mgmt',        x: 48, y: 80, color: '#7A8FCC'},
+    {name: 'Insurance',          x: 52, y: 45, color: '#666'},
+    {name: 'International',      x: 42, y: 70, color: '#666'}
+  ];
+
+  var svg = d3.select(container).append('svg').attr('width', W).attr('height', H);
+  var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+  var xScale = d3.scaleLinear().domain([0, 100]).range([0, w]);
+  var yScale = d3.scaleLinear().domain([0, 100]).range([h, 0]);
+  var mid = 50;
+
+  // Quadrant fills
+  var quads = [
+    {x: 0, y: 0, w: xScale(mid), h: yScale(mid), fill: 'rgba(26,82,118,0.12)', label: 'BUILD CAPABILITY', lx: xScale(mid)/2, ly: yScale(mid)+yScale(mid)/2},
+    {x: xScale(mid), y: 0, w: w-xScale(mid), h: yScale(mid), fill: 'rgba(204,0,0,0.12)', label: 'ACT NOW', lx: xScale(mid) + (w-xScale(mid))/2, ly: yScale(mid)/2},
+    {x: 0, y: yScale(mid), w: xScale(mid), h: h-yScale(mid), fill: 'rgba(50,50,50,0.1)', label: 'DEPRIORITISE', lx: xScale(mid)/2, ly: yScale(mid)+(h-yScale(mid))/2},
+    {x: xScale(mid), y: yScale(mid), w: w-xScale(mid), h: h-yScale(mid), fill: 'rgba(0,80,0,0.1)', label: 'QUICK WINS', lx: xScale(mid)+(w-xScale(mid))/2, ly: yScale(mid)+(h-yScale(mid))/2}
+  ];
+
+  quads.forEach(function(q) {
+    g.append('rect').attr('x', q.x).attr('y', q.y).attr('width', q.w).attr('height', q.h).attr('fill', q.fill);
+    g.append('text').attr('x', q.lx).attr('y', q.ly)
+      .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+      .style('fill', '#8A7A7A').style('font-size', '10px').style('font-family', 'Inter')
+      .style('font-weight', '700').style('letter-spacing', '0.08em')
+      .text(q.label);
+  });
+
+  // Grid
+  g.append('g').attr('class', 'grid').attr('transform', 'translate(0,' + h + ')')
+    .call(d3.axisBottom(xScale).tickSize(-h).tickFormat(''));
+  g.append('g').attr('class', 'grid')
+    .call(d3.axisLeft(yScale).tickSize(-w).tickFormat(''));
+
+  // Midlines
+  g.append('line').attr('x1', xScale(mid)).attr('x2', xScale(mid)).attr('y1', 0).attr('y2', h)
+    .attr('stroke', 'rgba(204,0,0,0.3)').attr('stroke-dasharray', '5,3').attr('stroke-width', 1);
+  g.append('line').attr('x1', 0).attr('x2', w).attr('y1', yScale(mid)).attr('y2', yScale(mid))
+    .attr('stroke', 'rgba(204,0,0,0.3)').attr('stroke-dasharray', '5,3').attr('stroke-width', 1);
+
+  // Axes
+  g.append('g').attr('transform', 'translate(0,' + h + ')').call(d3.axisBottom(xScale).ticks(5))
+    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+  g.append('g').call(d3.axisLeft(yScale).ticks(5))
+    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+
+  svg.append('text').attr('x', W/2).attr('y', H - 12).attr('text-anchor', 'middle')
+    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('Market Demand');
+  svg.append('text').attr('transform', 'rotate(-90)').attr('x', -(H/2)).attr('y', 14)
+    .attr('text-anchor', 'middle')
+    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('ABSA Readiness');
+
+  var tip = document.getElementById('d3-tooltip');
+
+  // Points
+  g.selectAll('circle.qp').data(points).enter().append('circle')
+    .attr('class', 'qp')
+    .attr('cx', function(d) { return xScale(d.x); })
+    .attr('cy', function(d) { return yScale(d.y); })
+    .attr('r', 8)
+    .attr('fill', function(d) { return d.color; })
+    .attr('fill-opacity', 0.8)
+    .attr('stroke', function(d) { return d.color; })
+    .attr('stroke-width', 1.5)
+    .style('cursor', 'pointer')
+    .on('mousemove', function(event, d) {
+      tip.style.display = 'block';
+      tip.style.left = (event.clientX + 14) + 'px';
+      tip.style.top = (event.clientY - 10) + 'px';
+      tip.innerHTML = '<div class="tip-name">' + d.name + '</div>'
+        + '<div>Market Demand: <b>' + d.x + '</b></div>'
+        + '<div>ABSA Readiness: <b>' + d.y + '</b></div>';
+    })
+    .on('mouseleave', function() { tip.style.display = 'none'; });
+
+  // Labels with collision avoidance (simple offset)
+  var offsets = {
+    'Digi Account': [8, -14],
+    'Multi-currency Card': [8, 6],
+    'Spark Entrepreneur': [-8, -14],
+    'Home Loans': [8, -12],
+    'Personal Loans': [8, 6],
+    'SME Banking': [-8, -14],
+    'Wealth Mgmt': [-8, 6],
+    'Insurance': [8, 6],
+    'International': [-8, -14]
+  };
+
+  g.selectAll('text.qlabel').data(points).enter().append('text')
+    .attr('class', 'qlabel')
+    .attr('x', function(d) { var off = offsets[d.name] || [8,-12]; return xScale(d.x) + off[0]; })
+    .attr('y', function(d) { var off = offsets[d.name] || [8,-12]; return yScale(d.y) + off[1]; })
+    .attr('text-anchor', function(d) { var off = offsets[d.name] || [8,-12]; return off[0] > 0 ? 'start' : 'end'; })
+    .style('fill', function(d) { return d.color; })
+    .style('font-size', '10px').style('font-family', 'Inter').style('font-weight', '600')
+    .style('pointer-events', 'none')
+    .text(function(d) { return d.name; });
+}
+
+/* ═══════════════════════════════════════════════════════ ROI CHART */
+function initROIChart() {
+  var container = document.getElementById('roi-chart');
+  container.innerHTML = '';
+  var W = container.offsetWidth || 700;
+  var H = 360;
+  var margin = {top: 30, right: 60, bottom: 50, left: 60};
+  var w = W - margin.left - margin.right;
+  var h = H - margin.top - margin.bottom;
+
+  var months = d3.range(1, 13);
+  var conservative = [0, -0.4, -0.1, 0.6, 1.8, 3.2, 4.9, 6.5, 8.1, 9.8, 11.2, 12.4];
+  var optimistic   = [0, -0.3,  0.2, 1.1, 2.8, 4.6, 6.4, 8.3, 10.2, 11.9, 13.4, 14.8];
+
+  var xScale = d3.scaleLinear().domain([1, 12]).range([0, w]);
+  var yMin = d3.min(conservative.concat(optimistic));
+  var yMax = d3.max(optimistic);
+  var yScale = d3.scaleLinear().domain([yMin - 0.5, yMax + 0.5]).range([h, 0]);
+
+  var svg = d3.select(container).append('svg').attr('width', W).attr('height', H);
+  var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+  // Grid
+  g.append('g').attr('class', 'grid').attr('transform', 'translate(0,' + h + ')')
+    .call(d3.axisBottom(xScale).tickSize(-h).tickFormat('').ticks(11));
+  g.append('g').attr('class', 'grid')
+    .call(d3.axisLeft(yScale).tickSize(-w).tickFormat('').ticks(8));
+
+  // Axes
+  g.append('g').attr('transform', 'translate(0,' + h + ')')
+    .call(d3.axisBottom(xScale).ticks(11).tickFormat(function(d) { return 'M' + d; }))
+    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+  g.append('g').call(d3.axisLeft(yScale).ticks(8).tickFormat(function(d) { return d + 'x'; }))
+    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
 
   // Breakeven line
   g.append('line')
-    .attr('x1',0).attr('y1',yScale(0))
-    .attr('x2',iW).attr('y2',yScale(0))
-    .style('stroke','#FFB300').style('stroke-width',1.5).style('stroke-dasharray','6,4');
+    .attr('x1', 0).attr('x2', w)
+    .attr('y1', yScale(0)).attr('y2', yScale(0))
+    .attr('stroke', 'rgba(255,255,255,0.2)').attr('stroke-dasharray', '4,4').attr('stroke-width', 1);
 
-  // Breakeven label
-  g.append('text')
-    .attr('x', xScale(4) + 8).attr('y', yScale(0) - 8)
-    .style('fill','#FFB300').style('font-size','11px').style('font-weight','700')
-    .text('Breakeven Month 4');
+  g.append('text').attr('x', w + 4).attr('y', yScale(0) + 4)
+    .style('fill', '#8A7A7A').style('font-size', '9px').style('font-family', 'Inter').text('breakeven');
 
-  // Axes
-  const xAxis = g.append('g').attr('transform',`translate(0,${iH})`).call(
-    d3.axisBottom(xScale).ticks(12).tickFormat(d => 'M'+d)
-  );
-  xAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
-  xAxis.selectAll('line,path').style('stroke','#3A2020');
+  // Line generator
+  var line = d3.line()
+    .x(function(d, i) { return xScale(months[i]); })
+    .y(function(d) { return yScale(d); })
+    .curve(d3.curveCatmullRom.alpha(0.5));
 
-  const yAxis = g.append('g').call(d3.axisLeft(yScale).ticks(8).tickFormat(d => d+'x'));
-  yAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
-  yAxis.selectAll('line,path').style('stroke','#3A2020');
-
-  svg.append('text').attr('x', margin.left + iW/2).attr('y', H - 4)
-    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
-    .text('Month');
-  svg.append('text')
-    .attr('transform','rotate(-90)')
-    .attr('x', -(margin.top + iH/2)).attr('y', 14)
-    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
-    .text('Cumulative ROI');
-
-  // Area under curve
-  const area = d3.area()
-    .x(d => xScale(d.month))
-    .y0(yScale(0))
-    .y1(d => yScale(d.val))
-    .curve(d3.curveMonotoneX);
-
+  // Conservative (dashed)
   g.append('path')
-    .datum(months)
-    .style('fill','rgba(204,0,0,0.10)')
-    .attr('d', area);
-
-  // Line
-  const line = d3.line()
-    .x(d => xScale(d.month))
-    .y(d => yScale(d.val))
-    .curve(d3.curveMonotoneX);
-
-  const path = g.append('path')
-    .datum(months)
-    .style('fill','none')
-    .style('stroke','#CC0000')
-    .style('stroke-width',2.5)
+    .datum(conservative)
+    .attr('fill', 'none')
+    .attr('stroke', '#8A7A7A')
+    .attr('stroke-width', 2)
+    .attr('stroke-dasharray', '6,4')
     .attr('d', line);
 
-  const totalLen = path.node().getTotalLength();
-  path.attr('stroke-dasharray', totalLen + ' ' + totalLen)
-    .attr('stroke-dashoffset', totalLen)
-    .transition().duration(1800).ease(d3.easeLinear)
-    .attr('stroke-dashoffset', 0);
+  // Optimistic (solid red)
+  g.append('path')
+    .datum(optimistic)
+    .attr('fill', 'none')
+    .attr('stroke', '#CC0000')
+    .attr('stroke-width', 2.5)
+    .attr('d', line);
 
-  // Dots
-  g.selectAll('.dot').data(months).enter().append('circle')
-    .attr('class','dot')
-    .attr('cx', d => xScale(d.month))
-    .attr('cy', d => yScale(d.val))
-    .attr('r', 4)
-    .style('fill', d => d.val < 0 ? '#FF3333' : '#CC0000')
-    .style('stroke','#1A0F0F')
-    .style('stroke-width',2)
-    .style('cursor','pointer')
-    .on('mousemove', (event, d) => {
-      showTip(`<strong>Month ${d.month}</strong>ROI: ${d.val.toFixed(1)}x`, event.clientX, event.clientY);
-    })
-    .on('mouseleave', hideTip);
+  // Area under optimistic
+  var area = d3.area()
+    .x(function(d, i) { return xScale(months[i]); })
+    .y0(yScale(0))
+    .y1(function(d) { return yScale(d); })
+    .curve(d3.curveCatmullRom.alpha(0.5));
 
-  // Final annotation
-  const last = months[months.length - 1];
-  g.append('text')
-    .attr('x', xScale(last.month) - 4)
-    .attr('y', yScale(last.val) - 12)
-    .style('fill','#00C853')
-    .style('font-size','12px')
-    .style('font-weight','700')
-    .style('text-anchor','end')
-    .style('font-family','IBM Plex Mono, monospace')
-    .text('13.7x ROI Month 12');
+  g.append('path')
+    .datum(optimistic.map(function(v) { return Math.max(0, v); }))
+    .attr('fill', 'rgba(204,0,0,0.06)')
+    .attr('d', area);
 
-  roiDrawn = true;
+  // Annotation at M4 (breakeven)
+  var m4x = xScale(4);
+  var m4y = yScale(conservative[3]);
+  g.append('line').attr('x1', m4x).attr('x2', m4x).attr('y1', m4y).attr('y2', yScale(0))
+    .attr('stroke', 'rgba(255,179,0,0.5)').attr('stroke-dasharray', '3,3').attr('stroke-width', 1);
+  g.append('text').attr('x', m4x + 4).attr('y', yScale(0) - 8)
+    .style('fill', '#FFB300').style('font-size', '10px').style('font-family', 'Inter').style('font-weight', '600')
+    .text('Breakeven ≈ M4');
+
+  // Annotation at M12
+  g.append('text').attr('x', xScale(12) - 4).attr('y', yScale(optimistic[11]) - 10)
+    .attr('text-anchor', 'end')
+    .style('fill', '#CC0000').style('font-size', '10px').style('font-family', 'IBM Plex Mono').style('font-weight', '700')
+    .text('14.8x');
+
+  g.append('text').attr('x', xScale(12) - 4).attr('y', yScale(conservative[11]) + 16)
+    .attr('text-anchor', 'end')
+    .style('fill', '#8A7A7A').style('font-size', '10px').style('font-family', 'IBM Plex Mono')
+    .text('12.4x');
+
+  // Axis labels
+  svg.append('text').attr('x', W/2).attr('y', H - 8).attr('text-anchor', 'middle')
+    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('Month');
+  svg.append('text').attr('transform', 'rotate(-90)').attr('x', -(H/2)).attr('y', 14)
+    .attr('text-anchor', 'middle')
+    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('ROI Multiplier');
+
+  // Legend
+  var leg = svg.append('g').attr('transform', 'translate(' + (margin.left + 20) + ',' + (margin.top + 10) + ')');
+  leg.append('line').attr('x1', 0).attr('x2', 24).attr('y1', 0).attr('y2', 0)
+    .attr('stroke', '#CC0000').attr('stroke-width', 2.5);
+  leg.append('text').attr('x', 28).attr('y', 4).style('fill', '#F0EBEB').style('font-size', '11px').style('font-family', 'Inter').text('Optimistic');
+  leg.append('line').attr('x1', 100).attr('x2', 124).attr('y1', 0).attr('y2', 0)
+    .attr('stroke', '#8A7A7A').attr('stroke-width', 2).attr('stroke-dasharray', '5,3');
+  leg.append('text').attr('x', 128).attr('y', 4).style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('Conservative');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   RESPONSIVE — redraw on resize
-═══════════════════════════════════════════════════════════ */
-let resizeTimer;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
-    if (activeTab === 'market')        renderBubble();
-    if (activeTab === 'opportunities') renderQuadrant();
-    if (activeTab === 'blueprint')     renderROI();
-  }, 200);
+/* ═══════════════════════════════════════════════════════ INIT OVERVIEW CHARTS on load */
+window.addEventListener('load', function() {
+  // Overview is active by default — nothing to init
 });
 </script>
 </body>
