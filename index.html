@@ -2169,15 +2169,18 @@ function initSignalBars() {
 
 /* ═══════════════════════════════════════════════════════ HEATMAP */
 function initHeatmap() {
-  var channels = ['Facebook', 'Instagram', 'Google Search', 'Google Display', 'WhatsApp', 'Content'];
+  var channels = ['Meta (FB+IG)', 'Google Search', 'YouTube', 'LinkedIn', 'WhatsApp Biz', 'TikTok', 'Email/CRM', 'Programmatic', 'SEO/Content'];
   var products = ['Digi Account', 'Spark', 'Home Loans', 'Multi-currency', 'Wealth'];
   var scores = [
-    [92, 88, 72, 80, 45],
-    [85, 75, 50, 90, 58],
-    [78, 65, 90, 55, 70],
-    [60, 45, 68, 42, 38],
-    [70, 82, 55, 60, 40],
-    [65, 78, 72, 55, 80]
+    [92, 88, 68, 85, 50],
+    [80, 72, 88, 60, 72],
+    [65, 70, 55, 58, 60],
+    [55, 80, 72, 50, 65],
+    [88, 85, 60, 62, 45],
+    [72, 85, 40, 78, 38],
+    [75, 68, 82, 55, 90],
+    [62, 50, 60, 45, 42],
+    [68, 75, 70, 52, 78]
   ];
 
   var grid = document.getElementById('heatmap-grid');
