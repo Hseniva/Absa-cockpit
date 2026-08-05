@@ -1963,16 +1963,30 @@
           <div class="phase-num">Phase 05</div>
           <div class="phase-name">INTELLIGENCE</div>
           <div class="phase-period">Ongoing</div>
-          <div class="phase-desc">Hseniva dashboard + competitor monitoring + weekly reports + quarterly strategy reviews.</div>
+          <div class="phase-desc">Intelligence Engine dashboard + competitor monitoring + weekly reports + quarterly strategy reviews.</div>
           <div class="phase-kpi">KPI: Full attribution · Real-time insights</div>
         </div>
       </div>
 
       <!-- AI ENGINE CALLOUT -->
       <div style="background:linear-gradient(135deg,#CC0000 0%,#8B0000 100%);border-radius:14px;padding:24px 28px;margin-bottom:40px;color:#fff;">
-        <div style="font-size:11px;font-weight:600;letter-spacing:1px;opacity:0.8;margin-bottom:8px;font-family:monospace;">AI SIGNAL ENGINE</div>
-        <div style="font-size:17px;font-weight:700;margin-bottom:10px;">All signals registered with the AI engine — continuously learning</div>
-        <div style="font-size:13.5px;opacity:0.9;line-height:1.7;">Every campaign signal — impressions, clicks, leads, conversions, costs, creative performance, audience response — is fed into Hseniva's AI engine. The engine learns from each cycle to improve targeting accuracy, reduce CPA, and surface the highest-value audience segments automatically. <strong>Performance compounds over time.</strong></div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;opacity:0.8;margin-bottom:8px;font-family:monospace;">INTELLIGENCE ENGINE · CAMPAIGN BRAIN</div>
+        <div style="font-size:17px;font-weight:700;margin-bottom:10px;">Your marketing campaign brain — powered by every signal we collect</div>
+        <div style="font-size:13.5px;opacity:0.9;line-height:1.7;margin-bottom:16px;">Every signal from every campaign — impressions, clicks, leads, conversions, cost-per-result, creative performance, audience response — is registered with the Intelligence Engine. It analyses all past campaign performance, learns what works in the Mauritius banking market, and uses that data to <strong>predict future campaign performance</strong> before you spend a single rupee.</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:14px;">
+            <div style="font-size:11px;font-family:monospace;opacity:0.8;margin-bottom:6px;">📥 INGEST</div>
+            <div style="font-size:13px;font-weight:600;">All past campaign performance data fed continuously into the engine</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:14px;">
+            <div style="font-size:11px;font-family:monospace;opacity:0.8;margin-bottom:6px;">🧠 ANALYSE</div>
+            <div style="font-size:13px;font-weight:600;">Engine learns audience patterns, creative performance, channel efficiency across cycles</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:14px;">
+            <div style="font-size:11px;font-family:monospace;opacity:0.8;margin-bottom:6px;">🔮 PREDICT</div>
+            <div style="font-size:13px;font-weight:600;">Predicts campaign performance, recommends targeting and budget allocation before launch</div>
+          </div>
+        </div>
       </div>
 
       <!-- ─── MOFU CONCEPTS ─── -->
@@ -2002,35 +2016,42 @@
         <h2 class="section-title" style="margin-bottom:6px;">Where Each Prospect Sits &amp; Which Channel Reaches Them</h2>
         <p style="color:var(--muted);font-size:14px;margin-bottom:24px;">Eugene Schwartz's 5 levels of awareness mapped to the Mauritius media plan. 90%+ of adults are already banked — this funnel is about <em>product</em> awareness, not category awareness.</p>
 
-        <!-- Funnel stages -->
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-bottom:0;">
-          <div style="text-align:center;padding:16px 8px;background:#FEF2F2;border-radius:10px 0 0 0;border:1px solid #E5E7EB;border-right:none;">
-            <div style="font-weight:700;font-size:14px;color:#111;">Unaware</div>
-            <div style="font-family:monospace;font-size:13px;color:#CC0000;margin-top:4px;">45%</div>
+        <!-- Funnel shape -->
+        <div style="margin-bottom:24px;">
+          <!-- Stage labels above funnel -->
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding:0 4px;">
+            <div style="text-align:center;flex:1"><div style="font-weight:700;font-size:13px;color:#111;">Unaware</div><div style="font-family:monospace;font-size:12px;color:#CC0000;">45%</div></div>
+            <div style="text-align:center;flex:1"><div style="font-weight:700;font-size:13px;color:#111;">Problem-aware</div><div style="font-family:monospace;font-size:12px;color:#D97706;">25%</div></div>
+            <div style="text-align:center;flex:1"><div style="font-weight:700;font-size:13px;color:#111;">Solution-aware</div><div style="font-family:monospace;font-size:12px;color:#059669;">18%</div></div>
+            <div style="text-align:center;flex:1"><div style="font-weight:700;font-size:13px;color:#111;">Product-aware</div><div style="font-family:monospace;font-size:12px;color:#2563EB;">8%</div></div>
+            <div style="text-align:center;flex:1"><div style="font-weight:700;font-size:13px;color:#111;">Highly aware</div><div style="font-family:monospace;font-size:12px;color:#7C3AED;">4%</div></div>
           </div>
-          <div style="text-align:center;padding:16px 8px;background:#FEF9EE;border:1px solid #E5E7EB;border-right:none;">
-            <div style="font-weight:700;font-size:14px;color:#111;">Problem-aware</div>
-            <div style="font-family:monospace;font-size:13px;color:#D97706;margin-top:4px;">25%</div>
+          <!-- SVG Funnel -->
+          <svg viewBox="0 0 800 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;margin-bottom:12px;" preserveAspectRatio="none">
+            <!-- Layer 1: Unaware 45% — full width -->
+            <polygon points="0,0 160,0 140,160 0,160" fill="#FCA5A5" opacity="0.85"/>
+            <text x="55" y="88" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#7F1D1D">45%</text>
+            <!-- Layer 2: Problem-aware 25% -->
+            <polygon points="160,0 320,0 280,160 140,160" fill="#FCD34D" opacity="0.85"/>
+            <text x="215" y="88" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#78350F">25%</text>
+            <!-- Layer 3: Solution-aware 18% -->
+            <polygon points="320,0 480,0 420,160 280,160" fill="#6EE7B7" opacity="0.85"/>
+            <text x="375" y="88" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#064E3B">18%</text>
+            <!-- Layer 4: Product-aware 8% -->
+            <polygon points="480,0 640,0 560,160 420,160" fill="#93C5FD" opacity="0.85"/>
+            <text x="530" y="88" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#1E3A8A">8%</text>
+            <!-- Layer 5: Highly aware 4% -->
+            <polygon points="640,0 800,0 700,160 560,160" fill="#C4B5FD" opacity="0.85"/>
+            <text x="680" y="88" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#4C1D95">4%</text>
+          </svg>
+          <!-- Descriptions below -->
+          <div style="display:flex;gap:8px;font-size:11px;color:#6B7280;line-height:1.4;">
+            <div style="flex:1;padding:10px;background:#FEF2F2;border-radius:8px;">Doesn't know a zero-fee multi-currency account exists.</div>
+            <div style="flex:1;padding:10px;background:#FFFBEB;border-radius:8px;">Feels FX fees &amp; queues — hasn't named switching as the fix.</div>
+            <div style="flex:1;padding:10px;background:#ECFDF5;border-radius:8px;">Comparing MCB Juice, SBM, Absa Digi — hasn't chosen yet.</div>
+            <div style="flex:1;padding:10px;background:#EFF6FF;border-radius:8px;">Knows Absa but not convinced vs. MCB scale or SBM rates.</div>
+            <div style="flex:1;padding:10px;background:#F5F3FF;border-radius:8px;">Ready to act — needs one final trigger to convert.</div>
           </div>
-          <div style="text-align:center;padding:16px 8px;background:#ECFDF5;border:1px solid #E5E7EB;border-right:none;">
-            <div style="font-weight:700;font-size:14px;color:#111;">Solution-aware</div>
-            <div style="font-family:monospace;font-size:13px;color:#059669;margin-top:4px;">18%</div>
-          </div>
-          <div style="text-align:center;padding:16px 8px;background:#EFF6FF;border:1px solid #E5E7EB;border-right:none;">
-            <div style="font-weight:700;font-size:14px;color:#111;">Product-aware</div>
-            <div style="font-family:monospace;font-size:13px;color:#2563EB;margin-top:4px;">8%</div>
-          </div>
-          <div style="text-align:center;padding:16px 8px;background:#F3E8FF;border-radius:0 10px 0 0;border:1px solid #E5E7EB;">
-            <div style="font-weight:700;font-size:14px;color:#111;">Highly aware</div>
-            <div style="font-family:monospace;font-size:13px;color:#7C3AED;margin-top:4px;">4%</div>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-bottom:24px;">
-          <div style="padding:12px 10px;background:#FEF2F2;border:1px solid #E5E7EB;border-top:none;border-right:none;border-radius:0 0 0 10px;font-size:11.5px;color:#6B7280;line-height:1.5;">Doesn't know a zero-fee multi-currency account exists as an alternative.</div>
-          <div style="padding:12px 10px;background:#FEF9EE;border:1px solid #E5E7EB;border-top:none;border-right:none;font-size:11.5px;color:#6B7280;line-height:1.5;">Feels FX fees, queues, card that doesn't work abroad — but hasn't named "switch banks" as the fix.</div>
-          <div style="padding:12px 10px;background:#ECFDF5;border:1px solid #E5E7EB;border-top:none;border-right:none;font-size:11.5px;color:#6B7280;line-height:1.5;">Comparing MCB Juice, SBM, Absa Digi Account — hasn't chosen yet.</div>
-          <div style="padding:12px 10px;background:#EFF6FF;border:1px solid #E5E7EB;border-top:none;border-right:none;font-size:11.5px;color:#6B7280;line-height:1.5;">Knows Absa but not convinced yet vs. MCB's scale or SBM's rates.</div>
-          <div style="padding:12px 10px;background:#F3E8FF;border:1px solid #E5E7EB;border-top:none;border-radius:0 0 10px 0;font-size:11.5px;color:#6B7280;line-height:1.5;">Ready to act. Needs one final trigger — fee comparison, referral, branch visit.</div>
         </div>
 
         <!-- MOFU/BOFU channels -->
