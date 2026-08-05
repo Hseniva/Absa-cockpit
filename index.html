@@ -11,15 +11,15 @@
 <style>
   :root {
     --absa: #CC0000;
-    --absa-light: #FF3333;
-    --bg: #0A0606;
-    --card: #140A0A;
-    --card-2: #1C0D0D;
-    --border: #2E1515;
-    --text: #F0EBEB;
-    --muted: #8A7A7A;
-    --ok: #00C853;
-    --warn: #FFB300;
+    --absa-light: #E60000;
+    --bg: #FFFFFF;
+    --card: #F7F8FA;
+    --card-2: #EDEEF0;
+    --border: #D8DADF;
+    --text: #111318;
+    --muted: #5A6070;
+    --ok: #0A7A3C;
+    --warn: #C07000;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,26 +36,27 @@
   /* ─── LOGIN OVERLAY ─── */
   #login-overlay {
     position: fixed; inset: 0; z-index: 9999;
-    background: radial-gradient(ellipse at 60% 40%, rgba(120,0,0,0.35) 0%, #0A0606 65%);
+    background: radial-gradient(ellipse at 60% 40%, rgba(180,0,0,0.08) 0%, #F0F0F0 65%);
+    backdrop-filter: none;
     display: flex; align-items: center; justify-content: center;
   }
 
   .login-box {
-    background: var(--card);
+    background: #FFFFFF;
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 56px 48px;
     width: 420px;
     max-width: 95vw;
     text-align: center;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(204,0,0,0.08);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
   }
 
   .login-logo {
     font-family: 'Fraunces', serif;
     font-size: 48px;
     font-weight: 700;
-    color: #fff;
+    color: var(--absa);
     letter-spacing: -1px;
     margin-bottom: 8px;
   }
@@ -100,7 +101,7 @@
 
   .login-field input {
     width: 100%;
-    background: var(--card-2);
+    background: #F5F5F7;
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
@@ -161,9 +162,8 @@
   /* ─── HEADER ─── */
   header {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(10,6,6,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
+    background: #fff;
+    border-bottom: 2px solid var(--absa);
     padding: 0 24px;
     height: 60px;
     display: flex; align-items: center; justify-content: space-between;
@@ -179,7 +179,7 @@
     font-family: 'Fraunces', serif;
     font-size: 22px;
     font-weight: 700;
-    color: #fff;
+    color: var(--absa);
   }
 
   .header-sub {
@@ -195,10 +195,10 @@
   }
 
   .tab-pill {
-    background: transparent;
+    background: #F0F0F2;
     border: 1px solid transparent;
     border-radius: 20px;
-    color: var(--muted);
+    color: var(--text);
     cursor: pointer;
     font-family: 'Inter', sans-serif;
     font-size: 12px;
@@ -211,9 +211,9 @@
   .tab-pill:hover { color: var(--text); border-color: var(--border); }
 
   .tab-pill.active {
-    background: rgba(204,0,0,0.15);
-    border-color: rgba(204,0,0,0.4);
-    color: var(--absa-light);
+    background: var(--absa);
+    border-color: var(--absa);
+    color: #fff;
   }
 
   .header-right {
@@ -348,7 +348,7 @@
   .signal-track {
     flex: 1;
     height: 8px;
-    background: var(--card-2);
+    background: #E8E9EC;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid var(--border);
@@ -457,7 +457,7 @@
   /* ─── D3 TOOLTIP ─── */
   .d3-tooltip {
     position: fixed;
-    background: rgba(20,10,10,0.95);
+    background: #fff;
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 10px 14px;
@@ -465,7 +465,7 @@
     font-size: 12px;
     color: var(--text);
     z-index: 9000;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
     display: none;
   }
 
@@ -495,7 +495,7 @@
 
   .data-table td {
     padding: 13px 16px;
-    border-bottom: 1px solid rgba(46,21,21,0.5);
+    border-bottom: 1px solid var(--border);
     font-size: 13px;
     color: var(--text);
   }
@@ -503,12 +503,12 @@
   .data-table tr:last-child td { border-bottom: none; }
 
   .data-table tr.highlight td {
-    background: rgba(204,0,0,0.07);
-    color: #fff;
+    background: rgba(204,0,0,0.06);
+    color: var(--text);
   }
 
   .data-table tr.highlight td:first-child {
-    border-left: 2px solid var(--absa);
+    border-left: 3px solid var(--absa);
     padding-left: 14px;
   }
 
@@ -532,8 +532,8 @@
     text-transform: uppercase;
     margin-bottom: 16px;
     padding: 10px 16px;
-    background: rgba(0,200,83,0.05);
-    border: 1px solid rgba(0,200,83,0.15);
+    background: #F7F8FA;
+    border: 1px solid var(--border);
     border-radius: 6px;
   }
 
@@ -557,7 +557,7 @@
 
   .intel-table td {
     padding: 11px 12px;
-    border-bottom: 1px solid rgba(46,21,21,0.4);
+    border-bottom: 1px solid rgba(216,218,223,0.7);
     color: var(--text);
     font-size: 11px;
   }
@@ -676,7 +676,7 @@
   .audience-row {
     display: flex; justify-content: space-between; align-items: center;
     font-size: 12px;
-    border-bottom: 1px solid rgba(46,21,21,0.5);
+    border-bottom: 1px solid rgba(216,218,223,0.6);
     padding-bottom: 8px;
   }
 
@@ -731,7 +731,7 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
     font-weight: 600;
-    color: rgba(255,255,255,0.85);
+    color: #fff;
     cursor: default;
     transition: transform 0.15s;
   }
@@ -842,16 +842,16 @@
 
   .inv-table td {
     padding: 13px 16px;
-    border-bottom: 1px solid rgba(46,21,21,0.5);
+    border-bottom: 1px solid var(--border);
     font-size: 13px;
     color: var(--text);
   }
 
   .inv-table tr:last-child td {
     border-bottom: none;
-    background: rgba(204,0,0,0.07);
+    background: rgba(204,0,0,0.06);
     font-weight: 700;
-    color: #fff;
+    color: var(--text);
   }
 
   .inv-table tr:last-child td:first-child {
@@ -1005,7 +1005,7 @@
   }
 
   .grid line {
-    stroke: rgba(46,21,21,0.6);
+    stroke: #E8E9EC;
     stroke-dasharray: 3,3;
   }
 
@@ -1014,7 +1014,7 @@
   /* Map tooltip */
   #map-tooltip {
     position: fixed;
-    background: rgba(20,10,10,0.95);
+    background: #fff;
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 10px 14px;
@@ -1022,7 +1022,7 @@
     font-size: 12px;
     color: var(--text);
     z-index: 9000;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
     display: none;
   }
 
@@ -1346,6 +1346,150 @@
           <p>ABSA launched Mauritius's first multi-currency virtual card in March 2026 — a genuinely unique product feature. This is massively undermarketed relative to product quality. Digital professionals and frequent travellers are an untapped, high-intent audience with zero competitor overlap.</p>
         </div>
       </div>
+
+      <!-- Creative Intelligence Section -->
+      <div style="margin-top:40px;">
+        <div class="section-label">Creative Intelligence</div>
+        <h2 class="section-title">Competitor Ad Creative Analysis · August 2026</h2>
+        <p style="color:var(--muted);margin-bottom:24px;font-size:13px;">Visual and messaging intelligence from competitor campaigns running in Mauritius. Full creative library requires Meta Ad Library API integration.</p>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px;">
+          <!-- MCB Creative Card -->
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div style="background:#1A5276;aspect-ratio:1.91/1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:20px;">
+              <div style="font-family:'IBM Plex Mono',monospace;color:#fff;font-size:22px;font-weight:600;text-align:center;">MCB Juice</div>
+              <div style="color:rgba(255,255,255,0.8);font-size:13px;text-align:center;">"Bank smarter,<br>live better"</div>
+              <div style="background:rgba(255,255,255,0.15);padding:6px 16px;border-radius:20px;color:#fff;font-size:12px;">Download Now</div>
+            </div>
+            <div style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-weight:600;font-size:13px;">MCB · Facebook</span>
+                <span style="background:rgba(204,0,0,0.1);color:var(--absa);font-size:11px;padding:2px 8px;border-radius:10px;font-family:'IBM Plex Mono',monospace;">↑ +22% reach</span>
+              </div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5;">App download campaign. Clean blue branding. Digital-first messaging targeting 22-40 age group. CTA: immediate app install.</div>
+              <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="background:var(--card-2);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--muted);">App Install</span>
+                <span style="background:var(--card-2);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--muted);">Digital Wallet</span>
+                <span style="background:var(--card-2);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--muted);">Mass Market</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SBM Creative Card -->
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div style="background:#117A65;aspect-ratio:1.91/1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:20px;">
+              <div style="font-family:'IBM Plex Mono',monospace;color:#fff;font-size:18px;font-weight:600;text-align:center;">Personal Loan</div>
+              <div style="color:rgba(255,255,255,0.9);font-size:24px;font-weight:700;text-align:center;">MUR 500,000</div>
+              <div style="color:rgba(255,255,255,0.8);font-size:13px;text-align:center;">"Quick approval,<br>low rates"</div>
+              <div style="background:#fff;padding:6px 16px;border-radius:20px;color:#117A65;font-size:12px;font-weight:600;">Apply Now</div>
+            </div>
+            <div style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-weight:600;font-size:13px;">SBM · Facebook</span>
+                <span style="background:rgba(204,0,0,0.1);color:var(--absa);font-size:11px;padding:2px 8px;border-radius:10px;font-family:'IBM Plex Mono',monospace;">↑ +31% reach</span>
+              </div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5;">Urgency-led loan campaign. Amount-led creative (large number = anchor). Fast approval as key differentiator. Strong CTA.</div>
+              <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="background:var(--card-2);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--muted);">Personal Loan</span>
+                <span style="background:var(--card-2);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--muted);">Urgency</span>
+                <span style="background:var(--card-2);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--muted);">Lead Gen</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ABSA Recommended Creative Card -->
+          <div style="background:var(--card);border:2px solid var(--absa);border-radius:12px;overflow:hidden;position:relative;">
+            <div style="position:absolute;top:10px;right:10px;background:var(--absa);color:#fff;font-size:10px;padding:2px 8px;border-radius:8px;font-family:'IBM Plex Mono',monospace;z-index:1;">RECOMMENDED</div>
+            <div style="background:linear-gradient(135deg,#CC0000 0%,#8B0000 100%);aspect-ratio:1.91/1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:20px;">
+              <div style="font-family:'Fraunces',serif;color:#fff;font-size:20px;font-weight:700;text-align:center;">Zero fees.<br>Full banking.</div>
+              <div style="color:rgba(255,255,255,0.85);font-size:13px;text-align:center;">Open your Digi Account<br>in 3 minutes</div>
+              <div style="background:#fff;padding:6px 16px;border-radius:20px;color:var(--absa);font-size:12px;font-weight:700;">Open Now →</div>
+            </div>
+            <div style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-weight:600;font-size:13px;">ABSA · Recommended</span>
+                <span style="background:rgba(0,200,83,0.1);color:var(--ok);font-size:11px;padding:2px 8px;border-radius:10px;font-family:'IBM Plex Mono',monospace;">Opportunity</span>
+              </div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5;">Digi Account campaign targeting MCB/SBM switchers. Zero fees as primary hook. Simple CTA. Fraunces serif for premium feel vs competitors' generic fonts.</div>
+              <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="background:rgba(204,0,0,0.1);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--absa);">Digi Account</span>
+                <span style="background:rgba(204,0,0,0.1);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--absa);">Zero Fees</span>
+                <span style="background:rgba(204,0,0,0.1);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--absa);">Switcher</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second row: 3 more creative cards -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+          <!-- AfrAsia -->
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div style="background:#3D1A6E;aspect-ratio:1.91/1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;padding:20px;">
+              <div style="font-family:'Fraunces',serif;color:#E8D5FF;font-size:16px;font-style:italic;text-align:center;">"Where wealth<br>meets vision"</div>
+              <div style="color:rgba(232,213,255,0.6);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Private Banking</div>
+            </div>
+            <div style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-weight:600;font-size:13px;">AfrAsia · Instagram</span>
+                <span style="background:#F0F0F0;color:var(--muted);font-size:11px;padding:2px 8px;border-radius:10px;font-family:'IBM Plex Mono',monospace;">→ +3% steady</span>
+              </div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5;">Premium aspirational. Minimal text. Targeting HNW individuals. Instagram-first. Low volume, high targeting precision.</div>
+              <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="background:var(--card-2);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--muted);">Private Banking</span>
+                <span style="background:var(--card-2);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--muted);">HNW</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ABSA Spark Recommended -->
+          <div style="background:var(--card);border:2px solid var(--absa);border-radius:12px;overflow:hidden;position:relative;">
+            <div style="position:absolute;top:10px;right:10px;background:var(--absa);color:#fff;font-size:10px;padding:2px 8px;border-radius:8px;font-family:'IBM Plex Mono',monospace;z-index:1;">RECOMMENDED</div>
+            <div style="background:linear-gradient(135deg,#1A0A0A 0%,#CC0000 100%);aspect-ratio:1.91/1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:20px;">
+              <div style="color:rgba(255,255,255,0.7);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;">Spark by Absa</div>
+              <div style="font-family:'Fraunces',serif;color:#fff;font-size:18px;font-weight:700;text-align:center;">Built for<br>Mauritius builders</div>
+              <div style="background:rgba(255,255,255,0.15);padding:6px 16px;border-radius:20px;color:#fff;font-size:12px;">Explore Spark →</div>
+            </div>
+            <div style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-weight:600;font-size:13px;">ABSA Spark · Recommended</span>
+                <span style="background:rgba(0,200,83,0.1);color:var(--ok);font-size:11px;padding:2px 8px;border-radius:10px;font-family:'IBM Plex Mono',monospace;">Uncontested</span>
+              </div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5;">Entrepreneur-focused campaign for Spark by Absa. No competitor owns this segment. "Mauritius builders" language resonates locally. Massive gap opportunity.</div>
+              <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="background:rgba(204,0,0,0.1);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--absa);">Spark</span>
+                <span style="background:rgba(204,0,0,0.1);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--absa);">SME</span>
+                <span style="background:rgba(204,0,0,0.1);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--absa);">Uncontested</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Multi-currency card -->
+          <div style="background:var(--card);border:2px solid var(--absa);border-radius:12px;overflow:hidden;position:relative;">
+            <div style="position:absolute;top:10px;right:10px;background:var(--absa);color:#fff;font-size:10px;padding:2px 8px;border-radius:8px;font-family:'IBM Plex Mono',monospace;z-index:1;">RECOMMENDED</div>
+            <div style="background:linear-gradient(135deg,#CC0000 0%,#4A0010 100%);aspect-ratio:1.91/1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:20px;">
+              <div style="color:rgba(255,255,255,0.8);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;">First in Mauritius</div>
+              <div style="font-family:'Fraunces',serif;color:#fff;font-size:18px;font-weight:700;text-align:center;">One card.<br>Every currency.</div>
+              <div style="background:#fff;padding:6px 16px;border-radius:20px;color:var(--absa);font-size:12px;font-weight:700;">Get Yours →</div>
+            </div>
+            <div style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-weight:600;font-size:13px;">Multi-currency · Recommended</span>
+                <span style="background:rgba(0,200,83,0.1);color:var(--ok);font-size:11px;padding:2px 8px;border-radius:10px;font-family:'IBM Plex Mono',monospace;">First mover</span>
+              </div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5;">Mauritius-first launch campaign for multi-currency virtual card. "First in Mauritius" positioning — massive awareness gap despite genuine product leadership.</div>
+              <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="background:rgba(204,0,0,0.1);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--absa);">Virtual Card</span>
+                <span style="background:rgba(204,0,0,0.1);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--absa);">First Mover</span>
+                <span style="background:rgba(204,0,0,0.1);padding:2px 8px;border-radius:8px;font-size:11px;color:var(--absa);">Travel</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;background:rgba(255,179,0,0.08);border:1px solid rgba(255,179,0,0.3);border-radius:10px;padding:14px 18px;font-size:12px;color:var(--muted);">
+          ⚡ <strong style="color:var(--text);">Live Creative Intelligence:</strong> Full competitor creative library (actual ad images, copy, spend data) requires Meta Ad Library API integration. Hseniva can activate this within 2 weeks of engagement start — delivering real-time competitive creative monitoring directly into this dashboard.
+        </div>
+      </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════ TAB 4: OPPORTUNITIES -->
@@ -1437,7 +1581,7 @@
         </div>
         <div style="display:flex; align-items:center; gap:12px; margin-top:16px;">
           <span style="font-size:11px; color:var(--muted);">Low</span>
-          <div style="flex:1; max-width:200px; height:8px; border-radius:4px; background: linear-gradient(90deg, #3A1A1A, #CC0000);"></div>
+          <div style="flex:1; max-width:200px; height:8px; border-radius:4px; background: linear-gradient(90deg, #FCEAEA, #CC0000);"></div>
           <span style="font-size:11px; color:var(--muted);">High</span>
         </div>
       </div>
@@ -1582,7 +1726,7 @@
 
   <!-- FOOTER -->
   <footer>
-    Prepared exclusively for Absa Bank Mauritius &nbsp;·&nbsp; Hseniva Media &nbsp;·&nbsp; hseniva.com &nbsp;·&nbsp; Confidential &nbsp;·&nbsp; August 2026
+    Prepared exclusively for Absa Bank Mauritius &nbsp;·&nbsp; <a href="https://avineshbundhoo.com" target="_blank" style="color:var(--absa);text-decoration:none;">Avinesh</a> &nbsp;·&nbsp; <a href="https://avineshbundhoo.com" target="_blank" style="color:var(--muted);text-decoration:none;">avineshbundhoo.com</a> &nbsp;·&nbsp; Confidential &nbsp;·&nbsp; August 2026
   </footer>
 
 </div><!-- /#app -->
@@ -1728,7 +1872,7 @@ function initHeatmap() {
       cell.className = 'hm-cell';
       cell.textContent = score;
       var t = score / 100;
-      cell.style.backgroundColor = interpolateColor('#1C0D0D', '#CC0000', t);
+      cell.style.backgroundColor = interpolateColor('#FCEAEA', '#CC0000', t);
       cell.title = ch + ' × ' + products[ci] + ' = ' + score;
       grid.appendChild(cell);
     });
@@ -1782,19 +1926,19 @@ function initBubbleChart() {
   // Axes
   g.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + h + ')')
     .call(d3.axisBottom(xScale).ticks(6))
-    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+    .selectAll('text').style('fill', '#5A6070').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
 
   g.append('g').attr('class', 'axis')
     .call(d3.axisLeft(yScale).ticks(6))
-    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+    .selectAll('text').style('fill', '#5A6070').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
 
   // Axis labels
   svg.append('text').attr('x', W/2).attr('y', H - 6).attr('text-anchor', 'middle')
-    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('Digital Maturity Index');
+    .style('fill', '#5A6070').style('font-size', '11px').style('font-family', 'Inter').text('Digital Maturity Index');
 
   svg.append('text').attr('transform', 'rotate(-90)').attr('x', -(H/2)).attr('y', 14)
     .attr('text-anchor', 'middle')
-    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('Growth Rate % YoY');
+    .style('fill', '#5A6070').style('font-size', '11px').style('font-family', 'Inter').text('Growth Rate % YoY');
 
   // Tooltip
   var tip = document.getElementById('d3-tooltip');
@@ -1845,7 +1989,7 @@ function initDistrictMap() {
 
   var colorScale = d3.scaleLinear()
     .domain([0, 100])
-    .range(['#3A1A1A', '#CC0000']);
+    .range(['#FCEAEA', '#CC0000']);
 
   // Stylized district blocks (rough Mauritius layout, not exact geo)
   var districts = [
@@ -1877,7 +2021,7 @@ function initDistrictMap() {
         mapTip.style.display = 'block';
         mapTip.style.left = (event.clientX + 14) + 'px';
         mapTip.style.top = (event.clientY - 10) + 'px';
-        mapTip.innerHTML = '<strong style="color:#FF3333;">' + d.name + '</strong><br>Opportunity Score: <strong>' + d.score + '</strong>';
+        mapTip.innerHTML = '<strong style="color:#CC0000;">' + d.name + '</strong><br>Opportunity Score: <strong>' + d.score + '</strong>';
       })
       .on('mouseleave', function() { mapTip.style.display = 'none'; });
 
@@ -1888,7 +2032,7 @@ function initDistrictMap() {
       .attr('height', d.h * scaleY)
       .attr('rx', 4)
       .attr('fill', colorScale(d.score))
-      .attr('stroke', '#0A0606')
+      .attr('stroke', '#FFFFFF')
       .attr('stroke-width', 2);
 
     g.append('text')
@@ -1896,7 +2040,7 @@ function initDistrictMap() {
       .attr('y', (d.y + d.h/2 - 7) * scaleY)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .style('fill', '#F0EBEB')
+      .style('fill', '#111318')
       .style('font-size', '9px')
       .style('font-family', 'Inter')
       .style('font-weight', '600')
@@ -1908,7 +2052,7 @@ function initDistrictMap() {
       .attr('y', (d.y + d.h/2 + 10) * scaleY)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .style('fill', '#F0EBEB')
+      .style('fill', '#111318')
       .style('font-size', '11px')
       .style('font-family', 'IBM Plex Mono')
       .style('font-weight', '700')
@@ -1919,12 +2063,12 @@ function initDistrictMap() {
   // Legend
   var defs = svg.append('defs');
   var grad = defs.append('linearGradient').attr('id', 'mapGrad');
-  grad.append('stop').attr('offset', '0%').attr('stop-color', '#3A1A1A');
+  grad.append('stop').attr('offset', '0%').attr('stop-color', '#FCEAEA');
   grad.append('stop').attr('offset', '100%').attr('stop-color', '#CC0000');
 
   svg.append('rect').attr('x', 20).attr('y', H - 24).attr('width', 100).attr('height', 10).attr('rx', 3).attr('fill', 'url(#mapGrad)');
-  svg.append('text').attr('x', 20).attr('y', H - 28).style('fill', '#8A7A7A').style('font-size', '9px').style('font-family', 'Inter').text('Low opportunity');
-  svg.append('text').attr('x', 125).attr('y', H - 28).style('fill', '#8A7A7A').style('font-size', '9px').style('font-family', 'Inter').text('High');
+  svg.append('text').attr('x', 20).attr('y', H - 28).style('fill', '#5A6070').style('font-size', '9px').style('font-family', 'Inter').text('Low opportunity');
+  svg.append('text').attr('x', 125).attr('y', H - 28).style('fill', '#5A6070').style('font-size', '9px').style('font-family', 'Inter').text('High');
 }
 
 /* ═══════════════════════════════════════════════════════ QUADRANT CHART */
@@ -1968,7 +2112,7 @@ function initQuadrant() {
     g.append('rect').attr('x', q.x).attr('y', q.y).attr('width', q.w).attr('height', q.h).attr('fill', q.fill);
     g.append('text').attr('x', q.lx).attr('y', q.ly)
       .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
-      .style('fill', '#8A7A7A').style('font-size', '10px').style('font-family', 'Inter')
+      .style('fill', '#5A6070').style('font-size', '10px').style('font-family', 'Inter')
       .style('font-weight', '700').style('letter-spacing', '0.08em')
       .text(q.label);
   });
@@ -1987,15 +2131,15 @@ function initQuadrant() {
 
   // Axes
   g.append('g').attr('transform', 'translate(0,' + h + ')').call(d3.axisBottom(xScale).ticks(5))
-    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+    .selectAll('text').style('fill', '#5A6070').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
   g.append('g').call(d3.axisLeft(yScale).ticks(5))
-    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+    .selectAll('text').style('fill', '#5A6070').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
 
   svg.append('text').attr('x', W/2).attr('y', H - 12).attr('text-anchor', 'middle')
-    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('Market Demand');
+    .style('fill', '#5A6070').style('font-size', '11px').style('font-family', 'Inter').text('Market Demand');
   svg.append('text').attr('transform', 'rotate(-90)').attr('x', -(H/2)).attr('y', 14)
     .attr('text-anchor', 'middle')
-    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('ABSA Readiness');
+    .style('fill', '#5A6070').style('font-size', '11px').style('font-family', 'Inter').text('ABSA Readiness');
 
   var tip = document.getElementById('d3-tooltip');
 
@@ -2075,18 +2219,18 @@ function initROIChart() {
   // Axes
   g.append('g').attr('transform', 'translate(0,' + h + ')')
     .call(d3.axisBottom(xScale).ticks(11).tickFormat(function(d) { return 'M' + d; }))
-    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+    .selectAll('text').style('fill', '#5A6070').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
   g.append('g').call(d3.axisLeft(yScale).ticks(8).tickFormat(function(d) { return d + 'x'; }))
-    .selectAll('text').style('fill', '#8A7A7A').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
+    .selectAll('text').style('fill', '#5A6070').style('font-family', 'IBM Plex Mono').style('font-size', '10px');
 
   // Breakeven line
   g.append('line')
     .attr('x1', 0).attr('x2', w)
     .attr('y1', yScale(0)).attr('y2', yScale(0))
-    .attr('stroke', 'rgba(255,255,255,0.2)').attr('stroke-dasharray', '4,4').attr('stroke-width', 1);
+    .attr('stroke', 'rgba(90,96,112,0.4)').attr('stroke-dasharray', '4,4').attr('stroke-width', 1);
 
   g.append('text').attr('x', w + 4).attr('y', yScale(0) + 4)
-    .style('fill', '#8A7A7A').style('font-size', '9px').style('font-family', 'Inter').text('breakeven');
+    .style('fill', '#5A6070').style('font-size', '9px').style('font-family', 'Inter').text('breakeven');
 
   // Line generator
   var line = d3.line()
@@ -2098,7 +2242,7 @@ function initROIChart() {
   g.append('path')
     .datum(conservative)
     .attr('fill', 'none')
-    .attr('stroke', '#8A7A7A')
+    .attr('stroke', '#5A6070')
     .attr('stroke-width', 2)
     .attr('stroke-dasharray', '6,4')
     .attr('d', line);
@@ -2140,24 +2284,24 @@ function initROIChart() {
 
   g.append('text').attr('x', xScale(12) - 4).attr('y', yScale(conservative[11]) + 16)
     .attr('text-anchor', 'end')
-    .style('fill', '#8A7A7A').style('font-size', '10px').style('font-family', 'IBM Plex Mono')
+    .style('fill', '#5A6070').style('font-size', '10px').style('font-family', 'IBM Plex Mono')
     .text('12.4x');
 
   // Axis labels
   svg.append('text').attr('x', W/2).attr('y', H - 8).attr('text-anchor', 'middle')
-    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('Month');
+    .style('fill', '#5A6070').style('font-size', '11px').style('font-family', 'Inter').text('Month');
   svg.append('text').attr('transform', 'rotate(-90)').attr('x', -(H/2)).attr('y', 14)
     .attr('text-anchor', 'middle')
-    .style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('ROI Multiplier');
+    .style('fill', '#5A6070').style('font-size', '11px').style('font-family', 'Inter').text('ROI Multiplier');
 
   // Legend
   var leg = svg.append('g').attr('transform', 'translate(' + (margin.left + 20) + ',' + (margin.top + 10) + ')');
   leg.append('line').attr('x1', 0).attr('x2', 24).attr('y1', 0).attr('y2', 0)
     .attr('stroke', '#CC0000').attr('stroke-width', 2.5);
-  leg.append('text').attr('x', 28).attr('y', 4).style('fill', '#F0EBEB').style('font-size', '11px').style('font-family', 'Inter').text('Optimistic');
+  leg.append('text').attr('x', 28).attr('y', 4).style('fill', '#111318').style('font-size', '11px').style('font-family', 'Inter').text('Optimistic');
   leg.append('line').attr('x1', 100).attr('x2', 124).attr('y1', 0).attr('y2', 0)
-    .attr('stroke', '#8A7A7A').attr('stroke-width', 2).attr('stroke-dasharray', '5,3');
-  leg.append('text').attr('x', 128).attr('y', 4).style('fill', '#8A7A7A').style('font-size', '11px').style('font-family', 'Inter').text('Conservative');
+    .attr('stroke', '#5A6070').attr('stroke-width', 2).attr('stroke-dasharray', '5,3');
+  leg.append('text').attr('x', 128).attr('y', 4).style('fill', '#5A6070').style('font-size', '11px').style('font-family', 'Inter').text('Conservative');
 }
 
 /* ═══════════════════════════════════════════════════════ INIT OVERVIEW CHARTS on load */
