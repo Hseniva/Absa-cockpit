@@ -1069,7 +1069,7 @@
       <button class="tab-pill" data-tab="competitors">Competitors</button>
       <button class="tab-pill" data-tab="opportunities">Opportunities</button>
       <button class="tab-pill" data-tab="blueprint">Blueprint</button>
-      <button class="tab-pill" data-tab="why-hseniva">Why Hseniva</button>
+      <button class="tab-pill" data-tab="why-hseniva">How I Can Help You</button>
     </nav>
     <div class="header-right">
       <span id="live-clock"></span>
@@ -1448,7 +1448,7 @@
       <div style="padding:12px 14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
           <span style="font-weight:700;font-size:13px;color:#111;">Absa Bank</span>
-          <span style="background:rgba(204,0,0,0.1);color:#CC0000;font-size:11px;padding:2px 7px;border-radius:8px;font-weight:600;">Your Client</span>
+          <span style="background:rgba(204,0,0,0.1);color:#CC0000;font-size:11px;padding:2px 7px;border-radius:8px;font-weight:600;">You</span>
         </div>
         <div style="font-size:12px;color:#555;line-height:1.5;">"Spark partou, Spark pou nou tou" — Spark lifestyle &amp; payment app · 12+ active ads</div>
         <div style="margin-top:6px;font-size:11px;color:#9CA3AF;">📡 Meta Ad Library · Mauritius</div>
@@ -2004,7 +2004,7 @@
 
     <!-- ═══════════════════════════════════════════════ TAB 6: WHY HSENIVA -->
     <div class="tab-content" id="tab-why-hseniva">
-      <div class="section-label">About Hseniva Media</div>
+      <div class="section-label">How I Can Help You</div>
       <div class="section-title">Why Hseniva for Absa Mauritius</div>
 
       <!-- Capability Cards -->
@@ -2140,6 +2140,7 @@ document.querySelectorAll('.tab-pill').forEach(function(pill) {
     document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
     this.classList.add('active');
     document.getElementById('tab-' + tab).classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
 
     // Init charts on first show
     if (tab === 'market' && !window._marketInit) {
