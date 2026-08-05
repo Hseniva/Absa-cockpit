@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ABSA Intelligence Cockpit — Hseniva Media</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0F0808;
+      --card:     #1A0F0F;
+      --red:      #CC0000;
+      --accent:   #FF3333;
+      --text:     #F5F0F0;
+      --muted:    #9A8A8A;
+      --border:   #3A2020;
+      --green:    #00C853;
+      --amber:    #FFB300;
+      --card2:    #221414;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════════════════
+       LOGIN SCREEN
+    ═══════════════════════════════════════════════ */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #login-screen.hidden { display: none; }
+
+    .login-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px 44px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 24px 80px rgba(204,0,0,0.18);
+    }
+    .login-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .login-logo-mark {
+      width: 44px;
+      height: 44px;
+      background: var(--red);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -1px;
+      color: #fff;
+    }
+    .login-logo-text { font-size: 20px; font-weight: 700; color: var(--text); }
+    .login-logo-sub  { font-size: 11px; color: var(--muted); font-weight: 400; }
+    .login-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .login-sub   { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+
+    .login-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; display: block; }
+    .login-input {
+      width: 100%;
+      background: #110A0A;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 18px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .login-input:focus { border-color: var(--red); }
+    .login-input::placeholder { color: #5A4040; }
+
+    .login-btn {
+      width: 100%;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 4px;
+    }
+    .login-btn:hover  { background: var(--accent); }
+    .login-btn:active { transform: scale(0.99); }
+
+    .login-error {
+      color: var(--accent);
+      font-size: 13px;
+      margin-top: 12px;
+      text-align: center;
+      height: 18px;
+    }
+    .login-footer-note {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 11px;
+      color: #5A4040;
+    }
+
+    /* ═══════════════════════════════════════════════
+       DASHBOARD SHELL
+    ═══════════════════════════════════════════════ */
+    #dashboard {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    #dashboard.visible { display: flex; }
+
+    /* TOP NAV */
+    .topnav {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topnav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-mark {
+      width: 34px; height: 34px;
+      background: var(--red);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px; color: #fff; letter-spacing: -0.5px;
+    }
+    .brand-name  { font-size: 16px; font-weight: 700; color: var(--text); }
+    .brand-badge { font-size: 10px; background: #2A1515; border: 1px solid var(--border); color: var(--muted); padding: 2px 8px; border-radius: 20px; margin-left: 4px; }
+    .topnav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-timestamp { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
+    .nav-user { font-size: 13px; color: var(--muted); }
+    .nav-user span { color: var(--text); font-weight: 600; }
+    .nav-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); }
+
+    /* TABS */
+    .tabs-bar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 0 28px;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      padding: 14px 18px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover  { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--red); font-weight: 600; }
+
+    /* MAIN CONTENT */
+    .main {
+      flex: 1;
+      padding: 32px 28px 48px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* TAB PANELS */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ═══════════════════════════════════════════════
+       SHARED COMPONENTS
+    ═══════════════════════════════════════════════ */
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .panel-heading {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .panel-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    /* STAT CARDS */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--red);
+    }
+    .stat-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .stat-icon {
+      position: absolute;
+      top: 18px; right: 18px;
+      font-size: 20px;
+      opacity: 0.35;
+    }
+
+    /* EXEC CARD */
+    .exec-card {
+      background: #110A0A;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--red);
+      border-radius: 10px;
+      padding: 24px 26px;
+      margin-bottom: 28px;
+    }
+    .exec-card-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--red);
+      margin-bottom: 10px;
+    }
+    .exec-card p {
+      font-size: 14px;
+      line-height: 1.75;
+      color: #D0C8C8;
+    }
+
+    /* SIGNAL BARS */
+    .signals-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 700px) { .signals-grid { grid-template-columns: 1fr; } }
+
+    .signal-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .signal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .signal-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .signal-pct  { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--muted); }
+    .signal-bar-bg {
+      height: 6px;
+      background: #2A1515;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .signal-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* GENERIC CARD */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 16px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+
+    /* DATA TABLE */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 12px;
+    }
+    .data-table td {
+      padding: 12px 12px;
+      border-bottom: 1px solid #221414;
+      color: var(--text);
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(204,0,0,0.04); }
+    .data-table .mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+    .data-table .highlight-row td { color: var(--accent); font-weight: 600; }
+
+    .trend-up   { color: var(--green); font-weight: 700; }
+    .trend-flat { color: var(--amber); font-weight: 700; }
+    .trend-down { color: var(--accent); font-weight: 700; }
+
+    /* PROVINCE GRID */
+    .province-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .province-cell {
+      border-radius: 8px;
+      padding: 16px 14px;
+      text-align: center;
+    }
+    .province-cell .prov-name  { font-size: 13px; font-weight: 700; color: #fff; }
+    .province-cell .prov-level { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; opacity: 0.8; }
+
+    /* COMPETITOR CARDS */
+    .comp-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 700px) { .comp-cards-grid { grid-template-columns: 1fr; } }
+
+    .comp-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .comp-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .comp-card-name   { font-size: 15px; font-weight: 700; color: var(--text); }
+    .comp-card-tag    { font-size: 10px; background: #2A1515; border: 1px solid var(--border); color: var(--red); padding: 3px 8px; border-radius: 20px; font-weight: 600; }
+    .comp-card-tagline { font-size: 13px; font-weight: 600; color: var(--amber); margin-bottom: 6px; }
+    .comp-card-desc { font-size: 12px; color: var(--muted); }
+
+    /* GAP OPPORTUNITY CARDS */
+    .gap-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 800px) { .gap-cards-grid { grid-template-columns: 1fr; } }
+
+    .gap-card {
+      background: #071A0F;
+      border: 1px solid #1A4030;
+      border-left: 4px solid var(--green);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .gap-card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--green); margin-bottom: 8px; }
+    .gap-card-text  { font-size: 13px; color: #C8E8D8; line-height: 1.6; }
+
+    /* AUDIENCE CARDS */
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 800px) { .audience-grid { grid-template-columns: 1fr; } }
+
+    .audience-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .audience-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red), var(--accent));
+    }
+    .audience-name  { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .audience-demo  { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+    .audience-metric { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .audience-metric-label { font-size: 11px; color: var(--muted); }
+    .audience-metric-val   { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--text); }
+
+    /* PHASE TIMELINE */
+    .phase-timeline {
+      display: flex;
+      gap: 0;
+      margin-bottom: 28px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .phase-step {
+      flex: 1;
+      min-width: 140px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-right: none;
+      padding: 18px 16px;
+      position: relative;
+    }
+    .phase-step:first-child { border-radius: 10px 0 0 10px; }
+    .phase-step:last-child  { border-right: 1px solid var(--border); border-radius: 0 10px 10px 0; }
+    .phase-step.active-phase { background: #200F0F; border-color: var(--red); }
+    .phase-num   { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 6px; }
+    .phase-name  { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .phase-weeks { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .phase-budget { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600; color: var(--red); margin-bottom: 4px; }
+    .phase-channel { font-size: 11px; color: var(--muted); font-weight: 500; }
+    .phase-connector {
+      position: absolute;
+      right: -10px; top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 10px solid var(--border);
+      z-index: 1;
+    }
+    .phase-step.active-phase .phase-connector { border-left-color: var(--red); }
+    .phase-step:last-child .phase-connector { display: none; }
+
+    /* CHART CONTAINERS */
+    .chart-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .chart-wrap svg { display: block; }
+
+    /* D3 tooltips */
+    .d3-tooltip {
+      position: fixed;
+      background: #1A0F0F;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--text);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      z-index: 1000;
+      max-width: 200px;
+    }
+    .d3-tooltip.visible { opacity: 1; }
+    .d3-tooltip strong { color: var(--accent); display: block; margin-bottom: 4px; }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      padding: 20px 28px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: #5A4040;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--red); }
+
+    /* PILL BADGE */
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .badge-red   { background: rgba(204,0,0,0.18); color: var(--accent); border: 1px solid rgba(204,0,0,0.3); }
+    .badge-green { background: rgba(0,200,83,0.12); color: var(--green); border: 1px solid rgba(0,200,83,0.25); }
+    .badge-amber { background: rgba(255,179,0,0.12); color: var(--amber); border: 1px solid rgba(255,179,0,0.25); }
+
+    /* CPA HIGHLIGHT */
+    .cpa-low  { color: var(--green); font-weight: 700; }
+    .cpa-high { color: var(--accent); font-weight: 700; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #3A2020; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #5A3030; }
+
+    /* Grid 2-col layout */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-mark">AB</div>
+      <div>
+        <div class="login-logo-text">ABSA Bank</div>
+        <div class="login-logo-sub">Intelligence Cockpit · Hseniva Media</div>
+      </div>
+    </div>
+    <div class="login-title">Secure Access</div>
+    <div class="login-sub">Enter your credentials to access the intelligence dashboard.</div>
+    <label class="login-label" for="l-user">Username</label>
+    <input class="login-input" id="l-user" type="text" placeholder="Enter username" autocomplete="username" />
+    <label class="login-label" for="l-pass">Password</label>
+    <input class="login-input" id="l-pass" type="password" placeholder="Enter password" autocomplete="current-password" />
+    <button class="login-btn" id="login-btn">Access Dashboard</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-footer-note">Confidential · For authorised use only</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     DASHBOARD
+══════════════════════════════════ -->
+<div id="dashboard">
+  <!-- Top Nav -->
+  <nav class="topnav">
+    <div class="topnav-brand">
+      <div class="brand-mark">AB</div>
+      <div>
+        <span class="brand-name">ABSA Intelligence Cockpit</span>
+        <span class="brand-badge">CONFIDENTIAL</span>
+      </div>
+    </div>
+    <div class="topnav-right">
+      <div class="nav-dot"></div>
+      <div class="nav-user">Signed in as <span id="nav-username">Avinesh</span></div>
+      <div class="nav-timestamp" id="nav-time">--:-- --</div>
+    </div>
+  </nav>
+
+  <!-- Tabs Bar -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="market">Market</button>
+    <button class="tab-btn" data-tab="competitors">Competitors</button>
+    <button class="tab-btn" data-tab="opportunities">Opportunities</button>
+    <button class="tab-btn" data-tab="blueprint">Blueprint</button>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- ════════════════════════════
+         TAB 1: OVERVIEW
+    ════════════════════════════ -->
+    <div class="tab-panel active" id="tab-overview">
+      <div class="panel-heading">Market Overview</div>
+      <div class="panel-sub">South Africa banking digital landscape · Updated 2026</div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value">R2.4B+</div>
+          <div class="stat-label">Estimated SA bank digital ad spend</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📱</div>
+          <div class="stat-value">65%</div>
+          <div class="stat-label">ABSA new product sales via digital</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-value">25.2M</div>
+          <div class="stat-label">Capitec active clients (biggest threat)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value">28M</div>
+          <div class="stat-label">Meta users in South Africa</div>
+        </div>
+      </div>
+
+      <div class="exec-card">
+        <div class="exec-card-label">🔺 Executive Intelligence Read</div>
+        <p>ABSA runs one of SA's largest paid media budgets, yet engagement metrics trail Capitec and FNB on key social surfaces. The opportunity: precision audience targeting, smarter creative sequencing, and a performance marketing infrastructure that converts ABSA's brand trust into measurable acquisition at lower CPA.</p>
+      </div>
+
+      <div class="section-title">Signal Strength Indicators</div>
+      <div class="signals-grid">
+        <div class="signal-item">
+          <div class="signal-header">
+            <span class="signal-name">Digital Brand Trust</span>
+            <span class="signal-pct">78%</span>
+          </div>
+          <div class="signal-bar-bg">
+            <div class="signal-bar-fill" data-width="78" style="width:0;background:var(--green);"></div>
+          </div>
+        </div>
+        <div class="signal-item">
+          <div class="signal-header">
+            <span class="signal-name">Meta Platform Presence</span>
+            <span class="signal-pct">45%</span>
+          </div>
+          <div class="signal-bar-bg">
+            <div class="signal-bar-fill" data-width="45" style="width:0;background:var(--amber);"></div>
+          </div>
+        </div>
+        <div class="signal-item">
+          <div class="signal-header">
+            <span class="signal-name">App Adoption</span>
+            <span class="signal-pct">72%</span>
+          </div>
+          <div class="signal-bar-bg">
+            <div class="signal-bar-fill" data-width="72" style="width:0;background:var(--green);"></div>
+          </div>
+        </div>
+        <div class="signal-item">
+          <div class="signal-header">
+            <span class="signal-name">Creative Performance</span>
+            <span class="signal-pct">38%</span>
+          </div>
+          <div class="signal-bar-bg">
+            <div class="signal-bar-fill" data-width="38" style="width:0;background:var(--accent);"></div>
+          </div>
+        </div>
+        <div class="signal-item" style="grid-column: 1 / -1;">
+          <div class="signal-header">
+            <span class="signal-name">Paid Media Efficiency</span>
+            <span class="signal-pct">42%</span>
+          </div>
+          <div class="signal-bar-bg">
+            <div class="signal-bar-fill" data-width="42" style="width:0;background:var(--amber);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         TAB 2: MARKET
+    ════════════════════════════ -->
+    <div class="tab-panel" id="tab-market">
+      <div class="panel-heading">Market Intelligence</div>
+      <div class="panel-sub">Competitive positioning across SA banking sector</div>
+
+      <div class="card-title" style="margin-bottom:14px;">Competitive Positioning — Bubble Chart</div>
+      <div class="chart-wrap" id="bubble-wrap">
+        <svg id="bubble-chart"></svg>
+      </div>
+
+      <div class="card-title" style="margin-bottom:14px;">Market Benchmarks</div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Bank</th>
+              <th>Customers</th>
+              <th>Digital Adoption</th>
+              <th>Ad Spend Index</th>
+              <th>CPA Index</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-red">THREAT</span> Capitec</td>
+              <td class="mono">25.2M</td>
+              <td><span class="badge badge-green">89%</span></td>
+              <td class="mono">62</td>
+              <td class="mono cpa-low">85</td>
+            </tr>
+            <tr>
+              <td>Standard Bank</td>
+              <td class="mono">14M</td>
+              <td>71%</td>
+              <td class="mono">95</td>
+              <td class="mono">110</td>
+            </tr>
+            <tr>
+              <td>FNB</td>
+              <td class="mono">12M</td>
+              <td>79%</td>
+              <td class="mono">105</td>
+              <td class="mono">108</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><span class="badge badge-amber">YOU</span> ABSA</td>
+              <td class="mono">11M</td>
+              <td>72%</td>
+              <td class="mono">115</td>
+              <td class="mono cpa-high">128</td>
+            </tr>
+            <tr>
+              <td>Nedbank</td>
+              <td class="mono">8M</td>
+              <td>68%</td>
+              <td class="mono">78</td>
+              <td class="mono">118</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-title" style="margin-bottom:14px;">Province Opportunity Grid</div>
+      <div class="card">
+        <div class="province-grid">
+          <div class="province-cell" style="background:#CC0000;">
+            <div class="prov-name">Gauteng</div>
+            <div class="prov-level">High Opportunity</div>
+          </div>
+          <div class="province-cell" style="background:#CC0000;">
+            <div class="prov-name">Western Cape</div>
+            <div class="prov-level">High Opportunity</div>
+          </div>
+          <div class="province-cell" style="background:#E87070;">
+            <div class="prov-name">KwaZulu-Natal</div>
+            <div class="prov-level">Medium Opportunity</div>
+          </div>
+          <div class="province-cell" style="background:#E87070;">
+            <div class="prov-name">Eastern Cape</div>
+            <div class="prov-level">Medium Opportunity</div>
+          </div>
+          <div class="province-cell" style="background:#7A3333;">
+            <div class="prov-name">Limpopo</div>
+            <div class="prov-level">Lower Opportunity</div>
+          </div>
+          <div class="province-cell" style="background:#7A3333;">
+            <div class="prov-name">Mpumalanga</div>
+            <div class="prov-level">Lower Opportunity</div>
+          </div>
+          <div class="province-cell" style="background:#7A3333;">
+            <div class="prov-name">North West</div>
+            <div class="prov-level">Lower Opportunity</div>
+          </div>
+          <div class="province-cell" style="background:#7A3333;">
+            <div class="prov-name">Free State</div>
+            <div class="prov-level">Lower Opportunity</div>
+          </div>
+          <div class="province-cell" style="background:#7A3333;">
+            <div class="prov-name">Northern Cape</div>
+            <div class="prov-level">Lower Opportunity</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:20px;flex-wrap:wrap;">
+          <span style="font-size:12px;color:var(--muted);">Legend:&nbsp;</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;"><span style="width:12px;height:12px;background:#CC0000;border-radius:2px;display:inline-block;"></span>High</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;"><span style="width:12px;height:12px;background:#E87070;border-radius:2px;display:inline-block;"></span>Medium</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;"><span style="width:12px;height:12px;background:#7A3333;border-radius:2px;display:inline-block;"></span>Lower</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         TAB 3: COMPETITORS
+    ════════════════════════════ -->
+    <div class="tab-panel" id="tab-competitors">
+      <div class="panel-heading">Competitor Intelligence</div>
+      <div class="panel-sub">Active intelligence on competitor paid media strategies</div>
+
+      <div class="card-title" style="margin-bottom:14px;">Intelligence Feed</div>
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Competitor</th>
+              <th>Platform</th>
+              <th>Theme</th>
+              <th>Est. Monthly Spend</th>
+              <th>Trend</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Capitec</strong></td>
+              <td><span class="badge badge-red">Meta</span></td>
+              <td>Personal Loans — "Lower rate"</td>
+              <td class="mono">R8.2M</td>
+              <td class="trend-up">↑ +34%</td>
+            </tr>
+            <tr>
+              <td><strong>FNB</strong></td>
+              <td><span class="badge badge-red">Meta</span></td>
+              <td>eBucks — rugby tie-in</td>
+              <td class="mono">R12.4M</td>
+              <td class="trend-flat">→ +2%</td>
+            </tr>
+            <tr>
+              <td><strong>Standard Bank</strong></td>
+              <td><span class="badge badge-red">Meta</span></td>
+              <td>Business Banking</td>
+              <td class="mono">R9.8M</td>
+              <td class="trend-up">↑ +18%</td>
+            </tr>
+            <tr>
+              <td><strong>Nedbank</strong></td>
+              <td><span class="badge badge-red">Meta</span></td>
+              <td>Green Home Loans</td>
+              <td class="mono">R5.1M</td>
+              <td class="trend-down">↓ -8%</td>
+            </tr>
+            <tr>
+              <td><strong>Capitec</strong></td>
+              <td><span class="badge badge-amber">Google</span></td>
+              <td>Personal loans search</td>
+              <td class="mono">R6.3M</td>
+              <td class="trend-up">↑ +41%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-title" style="margin-bottom:14px;">Competitor Positioning</div>
+      <div class="comp-cards-grid">
+        <div class="comp-card">
+          <div class="comp-card-header">
+            <span class="comp-card-name">Capitec</span>
+            <span class="comp-card-tag">BIGGEST THREAT</span>
+          </div>
+          <div class="comp-card-tagline">"Simplicity &amp; Value"</div>
+          <div class="comp-card-desc">Low fees, transparent pricing, digital-first banking that resonates with value-conscious South Africans across all income segments.</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-card-header">
+            <span class="comp-card-name">FNB</span>
+            <span class="comp-card-tag">STRONG DIGITAL</span>
+          </div>
+          <div class="comp-card-tagline">"Loyalty &amp; Lifestyle"</div>
+          <div class="comp-card-desc">eBucks rewards programme, rugby sponsorships, and lifestyle banking experiences create strong retention and aspirational appeal.</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-card-header">
+            <span class="comp-card-name">Standard Bank</span>
+            <span class="comp-card-tag">ENTERPRISE</span>
+          </div>
+          <div class="comp-card-tagline">"Africa &amp; Business"</div>
+          <div class="comp-card-desc">Pan-African footprint and SME-focused narrative positions them as the bank for ambitious entrepreneurs and corporate clients.</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-card-header">
+            <span class="comp-card-name">Nedbank</span>
+            <span class="comp-card-tag">NICHE</span>
+          </div>
+          <div class="comp-card-tagline">"Green &amp; Responsible"</div>
+          <div class="comp-card-desc">Sustainability narrative and green financing products attract ESG-conscious clients, though digital reach remains constrained.</div>
+        </div>
+      </div>
+
+      <div class="card-title" style="margin-bottom:14px;">Gap Opportunities for ABSA</div>
+      <div class="gap-cards-grid">
+        <div class="gap-card">
+          <div class="gap-card-label">🏠 Home Loans Gap</div>
+          <div class="gap-card-text">Nobody owning "Trust + Speed" for home loans. ABSA's brand credibility + faster pre-approval messaging is unclaimed territory.</div>
+        </div>
+        <div class="gap-card">
+          <div class="gap-card-label">🚗 Vehicle Finance Gap</div>
+          <div class="gap-card-text">No bank doing proper retargeting for vehicle finance. High-intent audiences are leaving without a structured follow-up sequence.</div>
+        </div>
+        <div class="gap-card">
+          <div class="gap-card-label">⬆️ Upgrade Segment Gap</div>
+          <div class="gap-card-text">Underserved: 35-50 professionals upgrading from Capitec. This aspirational segment needs tailored premium banking messaging.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         TAB 4: OPPORTUNITIES
+    ════════════════════════════ -->
+    <div class="tab-panel" id="tab-opportunities">
+      <div class="panel-heading">Opportunity Matrix</div>
+      <div class="panel-sub">Demand vs. ABSA readiness across product lines</div>
+
+      <div class="card-title" style="margin-bottom:14px;">Demand × Readiness Quadrant</div>
+      <div class="chart-wrap" id="quadrant-wrap">
+        <svg id="quadrant-chart"></svg>
+      </div>
+
+      <div class="card-title" style="margin-bottom:14px;">Priority Audience Segments</div>
+      <div class="audience-grid">
+        <div class="audience-card">
+          <div class="audience-name">Aspiring Homeowners</div>
+          <div class="audience-demo">25–40 years · R25k+ monthly income</div>
+          <div class="audience-metric">
+            <span class="audience-metric-label">Meta Audience Size</span>
+            <span class="audience-metric-val">2.8M</span>
+          </div>
+          <div class="audience-metric">
+            <span class="audience-metric-label">Target CPA</span>
+            <span class="audience-metric-val cpa-low">R680</span>
+          </div>
+          <div style="margin-top:10px;">
+            <span class="badge badge-red">Home Loans</span>
+          </div>
+        </div>
+        <div class="audience-card">
+          <div class="audience-name">SME Owners</div>
+          <div class="audience-demo">30–55 years · R1M–R50M turnover</div>
+          <div class="audience-metric">
+            <span class="audience-metric-label">Meta Audience Size</span>
+            <span class="audience-metric-val">890K</span>
+          </div>
+          <div class="audience-metric">
+            <span class="audience-metric-label">Target CPA</span>
+            <span class="audience-metric-val" style="color:var(--amber);">R1,240</span>
+          </div>
+          <div style="margin-top:10px;">
+            <span class="badge badge-amber">SME Banking</span>
+          </div>
+        </div>
+        <div class="audience-card">
+          <div class="audience-name">Capitec Upgraders</div>
+          <div class="audience-demo">28–45 years · Digitally active</div>
+          <div class="audience-metric">
+            <span class="audience-metric-label">Meta Audience Size</span>
+            <span class="audience-metric-val">3.4M</span>
+          </div>
+          <div class="audience-metric">
+            <span class="audience-metric-label">Target CPA</span>
+            <span class="audience-metric-val cpa-low">R420</span>
+          </div>
+          <div style="margin-top:10px;">
+            <span class="badge badge-green">HIGHEST PRIORITY</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         TAB 5: BLUEPRINT
+    ════════════════════════════ -->
+    <div class="tab-panel" id="tab-blueprint">
+      <div class="panel-heading">Campaign Blueprint</div>
+      <div class="panel-sub">12-month performance marketing roadmap · Hseniva Media</div>
+
+      <div class="card-title" style="margin-bottom:14px;">5-Phase Execution Timeline</div>
+      <div class="phase-timeline">
+        <div class="phase-step active-phase">
+          <div class="phase-num">Phase 1</div>
+          <div class="phase-name">Awareness</div>
+          <div class="phase-weeks">Wks 1–4</div>
+          <div class="phase-budget">R280K</div>
+          <div class="phase-channel">Meta Video</div>
+          <div class="phase-connector"></div>
+        </div>
+        <div class="phase-step">
+          <div class="phase-num">Phase 2</div>
+          <div class="phase-name">Consideration</div>
+          <div class="phase-weeks">Wks 3–8</div>
+          <div class="phase-budget">R420K</div>
+          <div class="phase-channel">Meta + Google</div>
+          <div class="phase-connector"></div>
+        </div>
+        <div class="phase-step">
+          <div class="phase-num">Phase 3</div>
+          <div class="phase-name">Conversion</div>
+          <div class="phase-weeks">Wks 5–12</div>
+          <div class="phase-budget">R650K</div>
+          <div class="phase-channel">CAPI + Smart Bidding</div>
+          <div class="phase-connector"></div>
+        </div>
+        <div class="phase-step">
+          <div class="phase-num">Phase 4</div>
+          <div class="phase-name">Retention</div>
+          <div class="phase-weeks">Ongoing</div>
+          <div class="phase-budget">R180K/mo</div>
+          <div class="phase-channel">Custom Audiences</div>
+          <div class="phase-connector"></div>
+        </div>
+        <div class="phase-step">
+          <div class="phase-num">Phase 5</div>
+          <div class="phase-name">Intelligence</div>
+          <div class="phase-weeks">Ongoing</div>
+          <div class="phase-budget" style="color:var(--green);">Live Data</div>
+          <div class="phase-channel">Hseniva Dashboard</div>
+        </div>
+      </div>
+
+      <div class="card-title" style="margin-bottom:14px;">Budget &amp; Expected Returns</div>
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Phase</th>
+              <th>Duration</th>
+              <th>Budget</th>
+              <th>Expected Return</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Awareness</td>
+              <td>4 weeks</td>
+              <td class="mono">R280K</td>
+              <td>4M reach, 15% brand lift</td>
+            </tr>
+            <tr>
+              <td>Consideration</td>
+              <td>6 weeks</td>
+              <td class="mono">R420K</td>
+              <td>8,500 leads</td>
+            </tr>
+            <tr>
+              <td>Conversion</td>
+              <td>8 weeks</td>
+              <td class="mono">R650K</td>
+              <td>1,200 accounts (R12M value)</td>
+            </tr>
+            <tr>
+              <td>Retention</td>
+              <td>Ongoing</td>
+              <td class="mono">R180K/mo</td>
+              <td>15% cross-sell uplift</td>
+            </tr>
+            <tr style="background:#200F0F;font-weight:700;">
+              <td style="color:var(--accent);">Total Year 1</td>
+              <td style="color:var(--accent);">12 months</td>
+              <td class="mono" style="color:var(--accent);">~R3.5M</td>
+              <td style="color:var(--green);">~R48M customer LTV</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-title" style="margin-bottom:14px;">Cumulative ROI Projection</div>
+      <div class="chart-wrap" id="roi-wrap">
+        <svg id="roi-chart"></svg>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- Footer -->
+  <div class="footer">
+    Prepared by <a href="https://hseniva.com" target="_blank">Hseniva Media</a> · hseniva.com · Confidential · 2026
+  </div>
+</div>
+
+<!-- D3 Tooltip -->
+<div class="d3-tooltip" id="d3-tooltip"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════════════════════ */
+(function () {
+  const screen = document.getElementById('login-screen');
+  const dash   = document.getElementById('dashboard');
+
+  function showDash() {
+    screen.classList.add('hidden');
+    dash.classList.add('visible');
+    initCharts();
+    animateBars();
+    startClock();
+  }
+
+  // Check session
+  if (sessionStorage.getItem('absa_auth') === '1') {
+    showDash();
+    return;
+  }
+
+  document.getElementById('login-btn').addEventListener('click', tryLogin);
+  document.getElementById('l-pass').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+  function tryLogin() {
+    const u = document.getElementById('l-user').value.trim();
+    const p = document.getElementById('l-pass').value;
+    const err = document.getElementById('login-error');
+    if (u === 'Avinesh' && p === 'Absa2026') {
+      sessionStorage.setItem('absa_auth', '1');
+      err.textContent = '';
+      showDash();
+    } else {
+      err.textContent = 'Invalid credentials. Please try again.';
+      document.getElementById('l-pass').value = '';
+      document.getElementById('l-pass').focus();
+    }
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   CLOCK
+═══════════════════════════════════════════════════════════ */
+function startClock() {
+  function tick() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('nav-time').textContent = `${h}:${m}:${s}`;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════════════ */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+
+    // Re-init charts if needed (they may not have been sized yet)
+    if (btn.dataset.tab === 'market') renderBubble();
+    if (btn.dataset.tab === 'opportunities') renderQuadrant();
+    if (btn.dataset.tab === 'blueprint') renderROI();
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════
+   SIGNAL BARS ANIMATION
+═══════════════════════════════════════════════════════════ */
+function animateBars() {
+  setTimeout(() => {
+    document.querySelectorAll('.signal-bar-fill').forEach(el => {
+      el.style.width = el.dataset.width + '%';
+    });
+  }, 200);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   D3 TOOLTIP HELPER
+═══════════════════════════════════════════════════════════ */
+const tooltip = document.getElementById('d3-tooltip');
+function showTip(html, x, y) {
+  tooltip.innerHTML = html;
+  tooltip.classList.add('visible');
+  tooltip.style.left = (x + 14) + 'px';
+  tooltip.style.top  = (y - 28) + 'px';
+}
+function hideTip() { tooltip.classList.remove('visible'); }
+
+/* ═══════════════════════════════════════════════════════════
+   CHART INIT CONTROLLER
+═══════════════════════════════════════════════════════════ */
+let bubblesDrawn = false, quadrantDrawn = false, roiDrawn = false;
+
+function initCharts() {
+  renderBubble();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUBBLE CHART — Market Competitive Positioning
+═══════════════════════════════════════════════════════════ */
+function renderBubble() {
+  const wrap = document.getElementById('bubble-wrap');
+  if (!wrap) return;
+  const W = wrap.clientWidth - 40;
+  const H = Math.max(340, Math.min(420, W * 0.55));
+
+  d3.select('#bubble-chart').selectAll('*').remove();
+
+  const margin = { top: 30, right: 40, bottom: 50, left: 55 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const svg = d3.select('#bubble-chart')
+    .attr('width', W)
+    .attr('height', H);
+
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const data = [
+    { name: 'Capitec',       x: 12, y: 78, r: 25.2, color: '#E63946', label: 'Capitec' },
+    { name: 'FNB',           x:  6, y: 65, r: 12,   color: '#4361EE', label: 'FNB' },
+    { name: 'Standard Bank', x:  4, y: 55, r: 14,   color: '#2DC653', label: 'Standard Bank' },
+    { name: 'Nedbank',       x:  3, y: 48, r:  8,   color: '#F77F00', label: 'Nedbank' },
+    { name: 'ABSA',          x:  5, y: 52, r: 11,   color: '#CC0000', label: 'ABSA — You Are Here' },
+  ];
+
+  const xScale = d3.scaleLinear().domain([0, 16]).range([0, iW]);
+  const yScale = d3.scaleLinear().domain([30, 90]).range([iH, 0]);
+  const rScale = d3.scaleSqrt().domain([0, 30]).range([0, 52]);
+
+  // Grid lines
+  g.append('g').attr('class','grid')
+    .call(d3.axisLeft(yScale).tickSize(-iW).ticks(5).tickFormat(''))
+    .selectAll('line').style('stroke','#3A2020').style('stroke-dasharray','3,3');
+  g.select('.grid .domain').remove();
+
+  g.append('g').attr('class','grid')
+    .attr('transform', `translate(0,${iH})`)
+    .call(d3.axisBottom(xScale).tickSize(-iH).ticks(6).tickFormat(''))
+    .selectAll('line').style('stroke','#3A2020').style('stroke-dasharray','3,3');
+  g.select('.grid:nth-child(2) .domain').remove();
+
+  // Axes
+  const xAxis = g.append('g').attr('transform',`translate(0,${iH})`).call(d3.axisBottom(xScale).ticks(6));
+  xAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
+  xAxis.selectAll('line,path').style('stroke','#3A2020');
+
+  const yAxis = g.append('g').call(d3.axisLeft(yScale).ticks(5));
+  yAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
+  yAxis.selectAll('line,path').style('stroke','#3A2020');
+
+  // Axis labels
+  svg.append('text')
+    .attr('x', margin.left + iW/2).attr('y', H - 4)
+    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
+    .text('Customer Growth Rate (%)');
+  svg.append('text')
+    .attr('transform','rotate(-90)')
+    .attr('x', -(margin.top + iH/2)).attr('y', 14)
+    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
+    .text('Digital Engagement Score');
+
+  // Bubbles
+  const circles = g.selectAll('.bubble').data(data).enter().append('g').attr('class','bubble');
+
+  circles.append('circle')
+    .attr('cx', d => xScale(d.x))
+    .attr('cy', d => yScale(d.y))
+    .attr('r', 0)
+    .style('fill', d => d.color)
+    .style('opacity', 0.72)
+    .style('cursor','pointer')
+    .on('mousemove', (event, d) => {
+      showTip(`<strong>${d.label}</strong>Growth: ${d.x}%<br>Engagement: ${d.y}<br>Customers: ${d.r}M`, event.clientX, event.clientY);
+    })
+    .on('mouseleave', hideTip)
+    .transition().duration(900).ease(d3.easeBounceOut)
+    .attr('r', d => rScale(d.r));
+
+  // Labels
+  circles.append('text')
+    .attr('x', d => xScale(d.x))
+    .attr('y', d => yScale(d.y) - rScale(d.r) - 6)
+    .style('fill', d => d.color)
+    .style('font-size', d => d.name === 'ABSA' ? '12px' : '11px')
+    .style('font-weight', d => d.name === 'ABSA' ? '700' : '500')
+    .style('text-anchor','middle')
+    .style('font-family','Inter, sans-serif')
+    .text(d => d.label);
+
+  bubblesDrawn = true;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   QUADRANT CHART — Demand × Readiness
+═══════════════════════════════════════════════════════════ */
+function renderQuadrant() {
+  const wrap = document.getElementById('quadrant-wrap');
+  if (!wrap) return;
+  const W = wrap.clientWidth - 40;
+  const H = Math.max(360, Math.min(440, W * 0.6));
+
+  d3.select('#quadrant-chart').selectAll('*').remove();
+
+  const margin = { top: 30, right: 40, bottom: 50, left: 55 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const svg = d3.select('#quadrant-chart')
+    .attr('width', W)
+    .attr('height', H);
+
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const data = [
+    { name: 'Home Loans',     x: 82, y: 75, color: '#CC0000' },
+    { name: 'Personal Loans', x: 78, y: 45, color: '#9A8A8A' },
+    { name: 'Credit Cards',   x: 71, y: 68, color: '#CC0000' },
+    { name: 'SME Banking',    x: 55, y: 80, color: '#9A8A8A' },
+    { name: 'Vehicle Finance',x: 65, y: 55, color: '#CC0000' },
+    { name: 'Wealth Mgmt',    x: 42, y: 72, color: '#9A8A8A' },
+    { name: 'Basic Savings',  x: 88, y: 35, color: '#9A8A8A' },
+  ];
+
+  const xScale = d3.scaleLinear().domain([0,100]).range([0, iW]);
+  const yScale = d3.scaleLinear().domain([0,100]).range([iH, 0]);
+
+  // Quadrant backgrounds
+  const quadrants = [
+    { x1:0.5, y1:0,   x2:0.5, y2:0.5, label:'Build Capability', lx: 0.25, ly: 0.25, align:'middle' },
+    { x1:0.5, y1:0,   x2:1,   y2:0.5, label:'Act Now',           lx: 0.75, ly: 0.25, align:'middle' },
+    { x1:0,   y1:0.5, x2:0.5, y2:1,   label:'Deprioritise',      lx: 0.25, ly: 0.75, align:'middle' },
+    { x1:0.5, y1:0.5, x2:1,   y2:1,   label:'Quick Wins',        lx: 0.75, ly: 0.75, align:'middle' },
+  ];
+
+  const qColors = ['#1A1030','#200F0F','#141414','#071A0F'];
+  const qLabelColors = ['#6060A0','#CC3333','#606060','#00A040'];
+
+  g.append('rect').attr('x',0).attr('y',0).attr('width',iW/2).attr('height',iH/2).style('fill','#1A1030').style('opacity',0.4);
+  g.append('rect').attr('x',iW/2).attr('y',0).attr('width',iW/2).attr('height',iH/2).style('fill','#200F0F').style('opacity',0.5);
+  g.append('rect').attr('x',0).attr('y',iH/2).attr('width',iW/2).attr('height',iH/2).style('fill','#141414').style('opacity',0.4);
+  g.append('rect').attr('x',iW/2).attr('y',iH/2).attr('width',iW/2).attr('height',iH/2).style('fill','#071A0F').style('opacity',0.45);
+
+  // Quadrant labels
+  const qlabels = [
+    { text: 'Build Capability', x: iW * 0.25, y: iH * 0.14, color: '#7070B0' },
+    { text: 'Act Now ★',        x: iW * 0.75, y: iH * 0.14, color: '#FF5555' },
+    { text: 'Deprioritise',     x: iW * 0.25, y: iH * 0.88, color: '#606060' },
+    { text: 'Quick Wins',       x: iW * 0.75, y: iH * 0.88, color: '#00B860' },
+  ];
+  qlabels.forEach(ql => {
+    g.append('text')
+      .attr('x', ql.x).attr('y', ql.y)
+      .style('fill', ql.color)
+      .style('font-size','12px')
+      .style('font-weight','700')
+      .style('text-anchor','middle')
+      .style('text-transform','uppercase')
+      .style('letter-spacing','0.06em')
+      .style('font-family','Inter, sans-serif')
+      .text(ql.text);
+  });
+
+  // Center lines
+  g.append('line').attr('x1',iW/2).attr('y1',0).attr('x2',iW/2).attr('y2',iH).style('stroke','#3A2020').style('stroke-width',1.5);
+  g.append('line').attr('x1',0).attr('y1',iH/2).attr('x2',iW).attr('y2',iH/2).style('stroke','#3A2020').style('stroke-width',1.5);
+
+  // Grid
+  g.append('g').call(d3.axisLeft(yScale).tickSize(-iW).ticks(5).tickFormat(''))
+    .selectAll('line').style('stroke','#2A2020').style('stroke-dasharray','2,4');
+  g.select('.domain').remove();
+
+  g.append('g').attr('transform',`translate(0,${iH})`)
+    .call(d3.axisBottom(xScale).tickSize(-iH).ticks(5).tickFormat(''))
+    .selectAll('line').style('stroke','#2A2020').style('stroke-dasharray','2,4');
+
+  // Axes
+  const xAxis = g.append('g').attr('transform',`translate(0,${iH})`).call(d3.axisBottom(xScale).ticks(5));
+  xAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
+  xAxis.selectAll('line,path').style('stroke','#3A2020');
+
+  const yAxis = g.append('g').call(d3.axisLeft(yScale).ticks(5));
+  yAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
+  yAxis.selectAll('line,path').style('stroke','#3A2020');
+
+  svg.append('text').attr('x', margin.left + iW/2).attr('y', H - 4)
+    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
+    .text('Audience Demand');
+  svg.append('text')
+    .attr('transform','rotate(-90)')
+    .attr('x', -(margin.top + iH/2)).attr('y', 14)
+    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
+    .text('ABSA Readiness');
+
+  // Points
+  const pts = g.selectAll('.qpt').data(data).enter().append('g').attr('class','qpt');
+
+  pts.append('circle')
+    .attr('cx', d => xScale(d.x))
+    .attr('cy', d => yScale(d.y))
+    .attr('r', 0)
+    .style('fill', d => d.color)
+    .style('opacity', 0.85)
+    .style('cursor','pointer')
+    .on('mousemove', (event, d) => {
+      showTip(`<strong>${d.name}</strong>Demand: ${d.x}<br>Readiness: ${d.y}`, event.clientX, event.clientY);
+    })
+    .on('mouseleave', hideTip)
+    .transition().duration(700).delay((d,i) => i*80)
+    .attr('r', 8);
+
+  pts.append('text')
+    .attr('x', d => xScale(d.x) + 11)
+    .attr('y', d => yScale(d.y) + 4)
+    .style('fill','#F5F0F0')
+    .style('font-size','11px')
+    .style('font-weight', d => d.color === '#CC0000' ? '700' : '400')
+    .style('font-family','Inter, sans-serif')
+    .text(d => d.name);
+
+  quadrantDrawn = true;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ROI LINE CHART
+═══════════════════════════════════════════════════════════ */
+function renderROI() {
+  const wrap = document.getElementById('roi-wrap');
+  if (!wrap) return;
+  const W = wrap.clientWidth - 40;
+  const H = Math.max(300, Math.min(380, W * 0.5));
+
+  d3.select('#roi-chart').selectAll('*').remove();
+
+  const margin = { top: 30, right: 60, bottom: 50, left: 60 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const roiData = [0.0, -0.3, -0.1, 0.8, 2.1, 3.9, 5.4, 7.2, 9.1, 10.8, 12.3, 13.7];
+  const months  = roiData.map((v,i) => ({ month: i+1, val: v }));
+
+  const svg = d3.select('#roi-chart')
+    .attr('width', W)
+    .attr('height', H);
+
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const xScale = d3.scaleLinear().domain([1,12]).range([0, iW]);
+  const yScale = d3.scaleLinear().domain([-1, 15]).range([iH, 0]);
+
+  // Grid
+  g.append('g').call(d3.axisLeft(yScale).tickSize(-iW).ticks(8).tickFormat(''))
+    .selectAll('line').style('stroke','#2A1515').style('stroke-dasharray','3,3');
+  g.select('.domain').remove();
+
+  // Breakeven line
+  g.append('line')
+    .attr('x1',0).attr('y1',yScale(0))
+    .attr('x2',iW).attr('y2',yScale(0))
+    .style('stroke','#FFB300').style('stroke-width',1.5).style('stroke-dasharray','6,4');
+
+  // Breakeven label
+  g.append('text')
+    .attr('x', xScale(4) + 8).attr('y', yScale(0) - 8)
+    .style('fill','#FFB300').style('font-size','11px').style('font-weight','700')
+    .text('Breakeven Month 4');
+
+  // Axes
+  const xAxis = g.append('g').attr('transform',`translate(0,${iH})`).call(
+    d3.axisBottom(xScale).ticks(12).tickFormat(d => 'M'+d)
+  );
+  xAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
+  xAxis.selectAll('line,path').style('stroke','#3A2020');
+
+  const yAxis = g.append('g').call(d3.axisLeft(yScale).ticks(8).tickFormat(d => d+'x'));
+  yAxis.selectAll('text').style('fill','#9A8A8A').style('font-size','11px').style('font-family','IBM Plex Mono, monospace');
+  yAxis.selectAll('line,path').style('stroke','#3A2020');
+
+  svg.append('text').attr('x', margin.left + iW/2).attr('y', H - 4)
+    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
+    .text('Month');
+  svg.append('text')
+    .attr('transform','rotate(-90)')
+    .attr('x', -(margin.top + iH/2)).attr('y', 14)
+    .style('fill','#9A8A8A').style('font-size','12px').style('text-anchor','middle')
+    .text('Cumulative ROI');
+
+  // Area under curve
+  const area = d3.area()
+    .x(d => xScale(d.month))
+    .y0(yScale(0))
+    .y1(d => yScale(d.val))
+    .curve(d3.curveMonotoneX);
+
+  g.append('path')
+    .datum(months)
+    .style('fill','rgba(204,0,0,0.10)')
+    .attr('d', area);
+
+  // Line
+  const line = d3.line()
+    .x(d => xScale(d.month))
+    .y(d => yScale(d.val))
+    .curve(d3.curveMonotoneX);
+
+  const path = g.append('path')
+    .datum(months)
+    .style('fill','none')
+    .style('stroke','#CC0000')
+    .style('stroke-width',2.5)
+    .attr('d', line);
+
+  const totalLen = path.node().getTotalLength();
+  path.attr('stroke-dasharray', totalLen + ' ' + totalLen)
+    .attr('stroke-dashoffset', totalLen)
+    .transition().duration(1800).ease(d3.easeLinear)
+    .attr('stroke-dashoffset', 0);
+
+  // Dots
+  g.selectAll('.dot').data(months).enter().append('circle')
+    .attr('class','dot')
+    .attr('cx', d => xScale(d.month))
+    .attr('cy', d => yScale(d.val))
+    .attr('r', 4)
+    .style('fill', d => d.val < 0 ? '#FF3333' : '#CC0000')
+    .style('stroke','#1A0F0F')
+    .style('stroke-width',2)
+    .style('cursor','pointer')
+    .on('mousemove', (event, d) => {
+      showTip(`<strong>Month ${d.month}</strong>ROI: ${d.val.toFixed(1)}x`, event.clientX, event.clientY);
+    })
+    .on('mouseleave', hideTip);
+
+  // Final annotation
+  const last = months[months.length - 1];
+  g.append('text')
+    .attr('x', xScale(last.month) - 4)
+    .attr('y', yScale(last.val) - 12)
+    .style('fill','#00C853')
+    .style('font-size','12px')
+    .style('font-weight','700')
+    .style('text-anchor','end')
+    .style('font-family','IBM Plex Mono, monospace')
+    .text('13.7x ROI Month 12');
+
+  roiDrawn = true;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — redraw on resize
+═══════════════════════════════════════════════════════════ */
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+    if (activeTab === 'market')        renderBubble();
+    if (activeTab === 'opportunities') renderQuadrant();
+    if (activeTab === 'blueprint')     renderROI();
+  }, 200);
+});
+</script>
+</body>
+</html>
